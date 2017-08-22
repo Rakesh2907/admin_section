@@ -26,6 +26,7 @@ class Dashboard extends React.Component
               dataType: 'json',
               type: 'POST',
               success: function(resdata) {
+                resdata.is_admin = 1;
                 if(resdata.is_admin){
                 	this.setState({isAdmin:1});
                     window.location.href = '#/dashboard';

@@ -27,7 +27,7 @@ var ActionMenu = React.createClass({
     render: function(){
             return (
                 <div>
-                    <a onClick={this.handleActionClick} href="javascript:void(0)">Actions</a>
+                  <a onClick={this.handleActionClick} href="javascript:void(0)"><i className="material-icons">open_in_new</i></a>
                   <ActionSubMenu isOpen={this.state.isOpen} applicantId={this.props.applicantId} applicantStatus={this.props.applicantStatus}/>
                 </div>
             );
@@ -96,7 +96,6 @@ var ActionSubMenu = React.createClass({
                     <div className="dropdown">
                         <ul className="dropdown-menu pull-right" style={_style}>
                             <li><a className=" waves-effect waves-block" href="javascript:void(0)" onClick={this.handleEdit.bind(this,this.props.applicantId,this.props.applicantStatus)}>Applicant Info</a></li>
-                            <li><a className=" waves-effect waves-block" href="javascript:void(0)" data-toggle="modal" onClick={this.handleDelete}>Delete</a></li>
                         </ul>
                         <Modal show={this.state.modalShow} onHide={this.noDelete} container={this} aria-labelledby="contained-modal-title">
                         <Modal.Header closeButton>
@@ -127,7 +126,10 @@ const ControlledTabs = React.createClass({
         guardian_birth:0,
         disabled: statusApplicant,
         interview_date: null,
-        time_condition: 0
+        time_condition: 0,
+        form_steps: 1,
+        child_id: 0,
+        convert_to_students: 0
     };
   },
   componentDidMount()
@@ -213,9 +215,15 @@ const ControlledTabs = React.createClass({
                    $("#transaction_id").html(" "+resdata[0]['transaction_id']); 
                    $("#payment_options").html(" "+resdata[0]['payment_option']);
                    $("#registration_number").html(" "+resdata[0]['admission_registration_number']);
-
+                   $("#interview_status").html(" "+resdata[0]['interview_status']);
+                   $("#document_status").html(" "+resdata[0]['document_status']);
                    $("#applicant_form_status > [value="+resdata[0]['form_status']+"]").attr("selected", "true");
                    $("#applicantion_for_class > [value="+resdata[0]['class_id']+"]").attr("selected", "true");
+                   this.setState({
+                        form_steps: resdata[0]['steps'],
+                        convert_to_students: resdata[0]['convert_to_student'],
+                        child_id: resdata[0]['child_id']
+                   });
                }
            }
          }.bind(this),
@@ -397,9 +405,9 @@ const ControlledTabs = React.createClass({
         <Tab eventKey={3} title="Father"><FatherForm father_birth={this.state.father_birth} father_mobile={this.state.mobile_number}/></Tab>
         <Tab eventKey={4} title="Mother"><MotherForm mother_birth={this.state.mother_birth} mother_mobile={this.state.mobile_number}/></Tab>
         <Tab eventKey={5} title="Guardian"><GuardianForm guardian_birth={this.state.guardian_birth} guardian_mobile={this.state.mobile_number}/></Tab>
-        <Tab eventKey={6} title="Status"><ApplicationFormStatus /></Tab>
         <Tab eventKey={7} title="Interview Shedule/Result" disabled={this.state.disabled}><Interview interviewDate={this.state.interview_date} timeCondition={this.state.time_condition}/></Tab>
         <Tab eventKey={8} title="Document" disabled={this.state.disabled}><ApplicantDocument /></Tab>
+        <Tab eventKey={6} title="Status"><ApplicationFormStatus form_steps={this.state.form_steps} childId={this.state.child_id} convertToStudent={this.state.convert_to_students}/></Tab>
       </Tabs>
     );
   }
@@ -625,7 +633,7 @@ class Interview extends React.Component
                         <input type="text" value={moment(this.state.interviewDate).format('llll')} readOnly />
                     </div>
                     <div className="m-input-moment">
-                      <button type="button"className="im-btn btn-save" onClick={this.handleReshedule}>Reshedule</button>
+                      <button type="button"className="im-btn btn-save btn btn-primary waves-effect" onClick={this.handleReshedule}>Reshedule</button>
                     </div>
                  </form>
                </div>      
@@ -645,13 +653,88 @@ class ApplicationFormStatus extends React.Component
 {
       constructor(props) {
           super(props);
-          this.state = {}
+          this.state = {
+            form_steps: props.form_steps,
+            childId: props.childId,
+            convertToStudent: props.convertToStudent,
+            disabled: false
+          }
           this.handleCancel = this.handleCancel.bind(this);
+          this.covertToStudent = this.covertToStudent.bind(this);
       }
       handleCancel(){
           document.getElementById("cancelPanel").click();
       }
+      componentWillReceiveProps(props)
+      {
+          this.setState({
+                form_steps:props.form_steps,
+                childId:props.childId,
+                convertToStudent: props.convertToStudent
+          });
+
+          if(props.convertToStudent == '1')
+          {
+              this.setState({disabled:true});
+          }else{
+              this.setState({disabled:false});
+          }  
+      }
+      covertToStudent(e)
+      {
+          //alert(e.target.value+" "+this.state.childId+" "+myapplicantData);
+
+           $.ajax({
+              url: base_url+'admin_con/convert_to_student',
+              dataType: 'json',
+              type: 'POST',
+              data: {
+                  applicant_id: myapplicantData,
+                  converto: e.target.value,
+                  child_id: this.state.childId 
+              },
+              success: function(resdata) 
+              {
+                if(resdata.success)
+                {
+                   swal({
+                      title: "Convert to Student Successfully",
+                      type: "success",
+                      confirmButtonClass: 'btn-success',
+                      confirmButtonText: 'Okay'
+                    },function(){
+                        //location.reload();
+                    });
+                    this.setState({disabled:true});
+                }else{
+                    this.setState({disabled:false});
+                }
+              }.bind(this),
+              error: function(xhr, status, err) {
+                console.error(err.toString());
+              }.bind(this)
+          });
+
+      }
       render(){
+         let mysteps;
+         if(this.state.form_steps === '10')
+         {
+            var selectedYes = this.state.convertToStudent == 1 ? 'selected' : '';
+            var selectedNo = this.state.convertToStudent == 0 ? 'selected' : '';
+
+            mysteps = (
+                <div className="form-group form-float">
+                        <label className="form-label">Convert To Student:</label>
+                        <select disabled={this.state.disabled} id="convert_student" className="form-control show-tick" data-live-search="true" name="convert_student" onChange={this.covertToStudent.bind(this)}>
+                            <option value="0" selected={selectedNo}>No</option>
+                            <option value="1" selected={selectedYes}>Yes</option>
+                        </select> 
+                </div>
+             )
+         }else{
+            <div className="form-group form-float"></div>
+         }
         return(
             <div className="body">
                 <form id="form_status" onSubmit={this.handleSubmit}>
@@ -684,6 +767,15 @@ class ApplicationFormStatus extends React.Component
                         <label className="form-label">Application Number:</label>
                         <span id="registration_number"></span>
                     </div>
+                    <div className="form-group form-float">
+                        <label className="form-label">Interview Status:</label>
+                        <span id="interview_status"></span>
+                    </div>
+                    <div className="form-group form-float">
+                        <label className="form-label">Document Status:</label>
+                        <span id="document_status"></span>
+                    </div>
+                    {mysteps}
                     <button className="btn btn-primary waves-effect" type="button" onClick={this.handleCancel}>Cancel</button>   
                 </form>
             </div>
@@ -1488,7 +1580,7 @@ export default class ApplicationTableListing extends React.Component
 
                     for(var i = 0;i < res.length;i++)
                     {
-                        res[i]['actions'] = <ActionMenu applicantId={res[i]['applicant_id']} applicantStatus={res[i]['form_status']} /> 
+                        res[i]['actions'] = <ActionMenu applicantId={res[i]['applicant_id']} applicantStatus={res[i]['form_status']}/> 
                     }
 
                     that.setState({
@@ -1517,7 +1609,7 @@ export default class ApplicationTableListing extends React.Component
                               keys="id"
                               columns={this.state.tableColumns}
                               initialData={this.state.data}
-                              initialPageLength={5}
+                              initialPageLength={10}
                               initialSortBy={{ prop: 'applicant_name', order: 'descending' }}
                               pageLengthOptions={[ 5, 20, 50, 100 ]}
                            />

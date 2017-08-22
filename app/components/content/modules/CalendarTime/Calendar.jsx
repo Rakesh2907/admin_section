@@ -57,11 +57,11 @@ export default class Calendar extends Component
     return (
       <div className={cx('m-calendar', this.props.className)}>
         <div className="toolbar">
-          <button type="button" className="prev-month" onClick={this.prevMonth}>
+          <button type="button" className="prev-month btn btn-btn btn-primary waves-effect" onClick={this.prevMonth}>
             <i className={this.props.prevMonthIcon} />
           </button>
           <span className="current-date">{m.format('MMMM YYYY')}</span>
-          <button type="button" className="next-month" onClick={this.nextMonth}>
+          <button type="button" className="next-month btn btn-btn btn-primary waves-effect" onClick={this.nextMonth}>
             <i className={this.props.nextMonthIcon} />
           </button>
         </div>

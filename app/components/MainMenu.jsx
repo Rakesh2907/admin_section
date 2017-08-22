@@ -62,7 +62,7 @@ class MainMenu extends React.Component
 	                    <li>
 	                        <Link to="/applications">
 	                            <i className="material-icons">layers</i>
-	                            <span>Applications</span>
+	                            <span>Admissions</span>
 	                        </Link>
 	                    </li>
 	                    <li>
@@ -109,7 +109,7 @@ class MainMenu extends React.Component
 	                    </li>
 	                    <li>
 	                    	<Link>
-	                    		<i className="material-icons">class</i>
+	                    		<i className="material-icons">subject</i>
 	                            <span>Subject</span>
 	                    	</Link>
 	                    </li>
@@ -121,38 +121,44 @@ class MainMenu extends React.Component
 	                    </li>
 	                    <li>
 	                    	<Link>
-	                    		<i className="material-icons">class</i>
+	                    		<i className="material-icons">format_list_bulleted</i>
 	                            <span>Attendance</span>
 	                    	</Link>
 	                    </li>
 	                    <li>
 	                    	<Link>
-	                    		<i className="material-icons">class</i>
+	                    		<i className="material-icons">assignment</i>
 	                            <span>Exam</span>
 	                    	</Link>
 	                    </li>
 	                    <li>
 	                    	<Link>
-	                    		<i className="material-icons">class</i>
+	                    		<i className="material-icons">account_balance</i>
 	                            <span>Library</span>
 	                    	</Link>
 	                    </li>
 	                    <li>
 	                    	<Link>
-	                    		<i className="material-icons">class</i>
+	                    		<i className="material-icons">account_balance_wallet</i>
 	                            <span>Accounting</span>
 	                    	</Link>
 	                    </li>
 	                    <li>
 	                    	<Link>
-	                    		<i className="material-icons">class</i>
+	                    		<i className="material-icons">directions_bus</i>
 	                            <span>Transport</span>
 	                    	</Link>
 	                    </li>
 	                    <li>
 	                    	<Link>
-	                    		<i className="material-icons">class</i>
+	                    		<i className="material-icons">chrome_reader_mode</i>
 	                            <span>Notice Board</span>
+	                    	</Link>
+	                    </li>
+	                    <li>
+	                    	<Link>
+	                    		<i className="material-icons">help_outline</i>
+	                            <span>Help</span>
 	                    	</Link>
 	                    </li>
 	                 </ul>   

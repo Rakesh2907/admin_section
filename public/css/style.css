@@ -8049,6 +8049,7 @@ html.ie11 .bs-searchbox .form-control {
 }
 .nav-tabs .disabled{
     opacity:0.01;
+    display: none;
 }
 .panel-default{
     border-color:#fff!important;

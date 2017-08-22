@@ -45,14 +45,14 @@ export default class InputMoment extends Component {
         <div className="options">
           <button
             type="button"
-            className={cx('ion-calendar im-btn', { 'is-active': tab === 0 })}
+            className={cx('ion-calendar im-btn btn btn-btn', { 'is-active btn btn-btn btn-primary waves-effect': tab === 0 })}
             onClick={e => this.handleClickTab(e, 0)}
           >
             Date
           </button>
           <button
             type="button"
-            className={cx('ion-clock im-btn', { 'is-active': tab === 1 })}
+            className={cx('ion-clock im-btn btn btn-btn', { 'is-active btn btn-btn btn-primary waves-effect': tab === 1 })}
             onClick={e => this.handleClickTab(e, 1)}
           >
             Time
@@ -76,14 +76,14 @@ export default class InputMoment extends Component {
 
         <button
           type="button"
-          className="im-btn btn-save ion-checkmark"
+          className="im-btn btn-save ion-checkmark btn btn-btn btn-primary waves-effect"
           onClick={this.handleSave}
         >
           Save
         </button>
         <button
           type="button"
-          className="im-btn btn-save"
+          className="im-btn btn-save btn btn-btn btn-primary waves-effect"
           onClick={this.handleCancel}
         >
           Cancel
