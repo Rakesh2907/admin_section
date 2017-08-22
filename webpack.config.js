@@ -42,7 +42,8 @@ module.exports = {
       Applications: 'app/components/Applications.jsx',
       Students: 'app/components/Students.jsx',
       Teachers: 'app/components/Teachers.jsx',
-      AddTeachersForm: 'app/components/content/Teachers/AddTeachersForm.jsx'
+      AddTeachersForm: 'app/components/content/Teachers/AddTeachersForm.jsx',
+      ApplicantDocument: 'app/components/content/Applications/ApplicantDocument.jsx'
     },
     extensions: ['', '.js', '.jsx']
   },

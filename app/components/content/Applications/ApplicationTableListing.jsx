@@ -407,6 +407,7 @@ const ControlledTabs = React.createClass({
         <Tab eventKey={5} title="Guardian"><GuardianForm guardian_birth={this.state.guardian_birth} guardian_mobile={this.state.mobile_number}/></Tab>
         <Tab eventKey={7} title="Interview Shedule/Result" disabled={this.state.disabled}><Interview interviewDate={this.state.interview_date} timeCondition={this.state.time_condition}/></Tab>
         <Tab eventKey={8} title="Document" disabled={this.state.disabled}><ApplicantDocument /></Tab>
+        <Tab eventKey={9} title="Fees" disabled={this.state.disabled}><AdmissionFees /></Tab>
         <Tab eventKey={6} title="Status"><ApplicationFormStatus form_steps={this.state.form_steps} childId={this.state.child_id} convertToStudent={this.state.convert_to_students}/></Tab>
       </Tabs>
     );
@@ -451,7 +452,18 @@ class ApplicantDocument extends React.Component
           );
       }
 }
-
+class AdmissionFees extends React.Component
+{
+    constructor(props) {
+          super(props);
+      }
+      render()
+      {
+          return(
+            <div className="body table-responsive"></div>
+          );
+      }      
+}
 class InterviewResult extends React.Component
 {
       constructor(props) {
@@ -488,9 +500,16 @@ class InterviewResult extends React.Component
                       $("#english_percentage > [value="+ resdata[0]['english_percentage']+"]").attr("selected", "true");
                       $("#gk_percentage > [value="+ resdata[0]['gk_percentage']+"]").attr("selected", "true");
                       $("#result > [value="+ resdata[0]['result']+"]").attr("selected", "true");
-                      this.setState({
-                          isDisabled: true
-                      });
+                      if(resdata[0]['result'] == 'PASS')
+                      {
+                         this.setState({
+                              isDisabled: true
+                         });
+                      }else{
+                         this.setState({
+                              isDisabled: false
+                         });
+                      }
                 }else{
                    this.setState({
                           isDisabled: false
@@ -518,6 +537,16 @@ class InterviewResult extends React.Component
                       confirmButtonClass: 'btn-success',
                       confirmButtonText: 'Okay'
                     });
+
+                    if($("#result").val() == 'PASS'){
+                        this.setState({
+                              isDisabled: true
+                        });
+                    }else{
+                        this.setState({
+                              isDisabled: false
+                        });
+                    }
                 }
               }.bind(this),
               error: function(xhr, status, err) {
@@ -581,7 +610,7 @@ class InterviewResult extends React.Component
                     <div className="form-group form-float">
                         <div className="form-line">
                               <label className="form-label">Result</label>
-                              <select id="result" className="form-control show-tick" data-live-search="true" name="result">
+                              <select disabled={this.state.isDisabled} id="result" className="form-control show-tick" data-live-search="true" name="result">
                                   <option value="NULL">Select</option>
                                   <option value="PASS">PASS</option>
                                   <option value="FAIL">FAIL</option>
@@ -590,7 +619,7 @@ class InterviewResult extends React.Component
                         </div>
                     </div>
                     <button type="submit" className="btn btn-primary m-t-15 waves-effect" style={_inlineStyle}>Save</button>
-                    <button type="button" className="btn btn-primary m-t-15 waves-effect" onClick={this.props.resheduleHandler}>Reshedule</button>
+                    <button type="button" disabled={this.state.isDisabled} className="btn btn-primary m-t-15 waves-effect" onClick={this.props.resheduleHandler}>Reshedule</button>
                 </form>
             </div>
           )
@@ -926,7 +955,7 @@ class GuardianForm extends React.Component
                       <Input
                         labelname='Mobile'
                         textname='guar_mobile'
-                        texttype='text'
+                        texttype='number'
                         onChange={this.handleChange}
                         value={this.state.mobile_num}
                         required={true}
@@ -1092,7 +1121,7 @@ class MotherForm extends React.Component
                           <Input
                             labelname='Mobile'
                             textname='mother_mobile'
-                            texttype='text'
+                            texttype='number'
                             onChange={this.handleChange}
                             value={this.state.mobile_num}
                             required={true}
@@ -1272,7 +1301,7 @@ class FatherForm extends React.Component
                           <Input
                             labelname='Mobile'
                             textname='father_mobile'
-                            texttype='text'
+                            texttype='number'
                             onChange={this.handleChange}
                             value={this.state.mobile_num}
                             required={true}
@@ -1414,7 +1443,7 @@ class ChildForm extends React.Component
                     <Input
                         labelname='Mobile Number'
                         textname='mobile_number'
-                        texttype='text'
+                        texttype='number'
                         onChange={this.handleChange}
                         value={this.state.mobile_num}
                         required={true}
@@ -1503,7 +1532,7 @@ class ApplicantForm extends React.Component
                       <Input
                         labelname='Mobile'
                         textname='applicant_mobile'
-                        texttype='text'
+                        texttype='number'
                         mypattern='[0-9]{10}'
                         required={true}
                       />
