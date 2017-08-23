@@ -27,7 +27,8 @@ export default class App extends Component
         	type: 'POST',
 	        data:{
 	            applicant_id: this.props.applicantId,
-	            interview: selectedDate 
+	            interview: selectedDate,
+                child_id: this.props.childId 
 	        },	
     	   	success: function(resdata)
     	   	{

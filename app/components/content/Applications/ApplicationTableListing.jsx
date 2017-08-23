@@ -140,8 +140,8 @@ class ControlledTabs extends React.Component
           this.getApplicant(myapplicantData); 
           this.getStatus(myapplicantData);
       }
-      handleSelect(key) {
-
+      handleSelect(key) 
+      {
           switch(key)
           {
             case 1:
@@ -168,18 +168,19 @@ class ControlledTabs extends React.Component
               this.getStatus(myapplicantData);
             break;
             case 7:
-              this.getInterviewShedule(myapplicantData)
+              this.getInterviewShedule(myapplicantData,this.state.child_id)
             break;
           }
           this.setState({key});
       }
-      getInterviewShedule(applicant_id){
+      getInterviewShedule(applicant_id,child_id){
           $.ajax({
             url: base_url+'admin_con/get_interview_shedule',
             dataType: 'json',
             type: 'POST',
             data:{
-                applicant_id: applicant_id
+                applicant_id: applicant_id,
+                child_id: child_id
             },
             success: function(resdata){
                 if(resdata)
@@ -412,7 +413,7 @@ class ControlledTabs extends React.Component
                   <Tab eventKey={5} title="Guardian"><GuardianForm guardian_birth={this.state.guardian_birth} guardian_mobile={this.state.mobile_number}/></Tab>
                   <Tab eventKey={7} title="Interview Shedule/Result" disabled={this.state.disabled}><Interview interviewDate={this.state.interview_date} timeCondition={this.state.time_condition} childId={this.state.child_id}/></Tab>
                   <Tab eventKey={8} title="Document" disabled={this.state.disabled}><ApplicantDocument /></Tab>
-                  <Tab eventKey={9} title="Fees" disabled={this.state.disabled}><AdmissionFees /></Tab>
+                  <Tab eventKey={9} title="Fees" disabled={this.state.disabled}><AdmissionFees childId={this.state.child_id}/></Tab>
                   <Tab eventKey={6} title="Status"><ApplicationFormStatus form_steps={this.state.form_steps} childId={this.state.child_id} convertToStudent={this.state.convert_to_students}/></Tab>
                </Tabs> 
             </div>
@@ -462,10 +463,56 @@ class AdmissionFees extends React.Component
 {
       constructor(props) {
           super(props);
+          this.state = {
+              childId : props.childId
+          }
           this.handleCancel = this.handleCancel.bind(this);
       }
-      handleSubmit(){
+      componentWillReceiveProps(props) {
+          this.setState({
+                childId: props.childId
+          });
+      }
+      componentDidMount(){
+         $.ajax({
+              url: base_url+'admin_con/get_fees',
+              dataType: 'json',
+              data:{
+                  applicant_id: myapplicantData,
+                  child_id: this.state.childId
+              },
+              success: function(resdata) {
+                if(resdata.length > 0)
+                {
+                        
+                }
+              }.bind(this),
+              error: function(xhr, status, err) {
+                console.error(err.toString());
+              }.bind(this)
+          });
+      }
+      handleSubmit(event){
           event.preventDefault();
+          $.ajax({
+              url: base_url+'admin_con/add_fees?id='+myapplicantData,
+              dataType: 'json',
+              type: 'POST',
+              data: $('#fees_form').serialize()+"&child_id="+this.state.childId,
+              success: function(resdata) {
+                if(resdata.success){
+                   swal({
+                      title: "Records Updated successfully...",
+                      type: "success",
+                      confirmButtonClass: 'btn-success',
+                      confirmButtonText: 'Okay'
+                    });
+                }
+              }.bind(this),
+              error: function(xhr, status, err) {
+                console.error(err.toString());
+              }.bind(this)
+          });
       }
       handleCancel(){
           document.getElementById("cancelPanel").click();
@@ -477,7 +524,7 @@ class AdmissionFees extends React.Component
           }
           return(
             <div className="body">
-                <form id="guardian_form" onSubmit={this.handleSubmit.bind(this)}>
+                <form id="fees_form" onSubmit={this.handleSubmit.bind(this)}>
                     <div className="form-group form-float">
                         <Input
                           labelname='Tution Fee'
@@ -554,7 +601,8 @@ class InterviewResult extends React.Component
               dataType: 'json',
               type: 'POST',
               data:{
-                  applicant_id: myapplicantData
+                  applicant_id: myapplicantData,
+                  child_id: this.state.childId
               },
               success: function(resdata) {
                 if(resdata.length > 0)
@@ -734,7 +782,7 @@ class Interview extends React.Component
             );
          }else if(this.state.interviewDate==null && !this.state.timeCondition){
              return(
-                <div><CalenderTime applicantId={myapplicantData}/></div>
+                <div><CalenderTime applicantId={myapplicantData} childId={this.state.childId}/></div>
              );
          }else if(this.state.timeCondition){
               return(
