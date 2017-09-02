@@ -11,36 +11,60 @@ class MainMenu extends React.Component
    			 	conditionApplicant:false,
    			 	conditionStudents:false,
  				conditionTeachers:false,
- 				conditionClass:false
+ 				conditionClass:false,
+ 				conditionDashboard:false
    			 }
 
    			 this.handleClick = this.handleClick.bind(this);
    	    }		 
+   	    componentWillReceiveProps(props){
 
-		handleClick(value){
+   	    }
+		handleClick(value)
+		{	
 			if(value === 'applicant')
 			{
-				this.setState( { conditionApplicant : !this.state.conditionApplicant } );
-				this.setState( { conditionStudents : false } );
-				this.setState( { conditionTeachers : false } );
-				this.setState( { conditionClass : false} );
+				this.setState({
+						 conditionApplicant : !this.state.conditionApplicant,
+						 conditionStudents : false,
+						 conditionTeachers : false,
+						 conditionClass : false,
+						 conditionDashboard : false
+				});
 			}else if(value === 'student')
 			{
-				this.setState( { conditionApplicant : false } );
-				this.setState( { conditionTeachers : false } );
-				this.setState( { conditionClass : false} );
-				this.setState( { conditionStudents : !this.state.conditionStudents } );
+				this.setState({
+						conditionApplicant : false,
+						conditionTeachers : false,
+						conditionClass : false,
+						conditionStudents : !this.state.conditionStudents,
+						conditionDashboard : false
+				});
 			}else if(value === 'teacher')
 			{
-				this.setState( { conditionApplicant : false } );
-				this.setState( { conditionTeachers : !this.state.conditionTeachers } );
-				this.setState( { conditionStudents : false } );
-				this.setState( { conditionClass : false} );
+				this.setState({
+						conditionApplicant : false,
+						conditionTeachers : !this.state.conditionTeachers,
+						conditionStudents : false,
+						conditionClass : false,
+						conditionDashboard : false
+				});
 			}else if(value === 'classes'){
-				this.setState( { conditionApplicant : false } );
-				this.setState( { conditionTeachers : false } );
-				this.setState( { conditionStudents : false } );
-				this.setState( { conditionClass : !this.state.conditionClass} );
+				this.setState({
+					conditionApplicant : false,
+					conditionTeachers : false,
+					conditionStudents : false,
+					conditionClass : !this.state.conditionClass,
+					conditionDashboard : false
+				});
+			}else if(value === 'dashboard'){
+				 this.setState({
+					conditionApplicant : false,
+					conditionTeachers : false,
+					conditionStudents : false,
+					conditionClass : false,
+					conditionDashboard : !this.state.conditionDashboard
+				 });
 			}	
 			
 		}
@@ -49,26 +73,27 @@ class MainMenu extends React.Component
 		 var myStyle = {
 				paddingLeft:'50px'
 		   }
+		   //alert(this.props.currentPath);
         	return (
         		<div className="menu">
         			<ul className="list">
                     	<li className="header">MAIN NAVIGATION</li>
-	                    <li className="active">
-	                        <Link to="/dashboard">
+	                    <li className={this.props.currentPath == '/dashboard' ? "active" :""}>
+	                        <Link to="/dashboard" onClick={this.handleClick.bind(this, 'dashboard')}>
 	                            <i className="material-icons">home</i>
-	                            <span>Home</span>
+	                            <span>DASHBOARD</span>
 	                        </Link>
 	                    </li>
-	                    <li>
-	                        <Link to="/applications">
+	                    <li className={this.props.currentPath == '/applications' ? "active" :""}>
+	                        <Link to="/applications" onClick={this.handleClick.bind(this, 'applicant')}>
 	                            <i className="material-icons">layers</i>
-	                            <span>Admissions</span>
+	                            <span>ADMISSIONS</span>
 	                        </Link>
 	                    </li>
-	                    <li>
+	                    <li className={this.props.currentPath == '/students' || this.props.currentPath == '/add_students' ? "active" :""}>
 	                        <Link to="/students" className={this.state.conditionStudents ? "menu-toggle toggled" :"menu-toggle"} onClick={this.handleClick.bind(this, 'student')}>
 	                            <i className="material-icons">group</i>
-	                            <span>Students</span>
+	                            <span>STUDENTS</span>
 	                        </Link>
 	                        <ul className={this.state.conditionStudents ? "ml-menu myblock" :"ml-menu mynone"}>
 	                        	<Link to="/add_students" style={myStyle}>
@@ -76,10 +101,10 @@ class MainMenu extends React.Component
 	                        	</Link>
 	                        </ul>
 	                    </li>
-	                    <li>
+	                    <li className={this.props.currentPath == '/teachers' || this.props.currentPath == '/add_teacher'? "active" :""}>
 	                        <Link to="/teachers" className={this.state.conditionTeachers ? "menu-toggle toggled" :"menu-toggle"} onClick={this.handleClick.bind(this, 'teacher')}>
 	                            <i className="material-icons">people_outline</i>
-	                            <span>Teachers</span>
+	                            <span>TEACHERS</span>
 	                        </Link>
 	                        <ul className={this.state.conditionTeachers ? "ml-menu myblock" :"ml-menu mynone"}>
 	                        	<Link to="/add_teacher" style={myStyle}>
@@ -87,16 +112,16 @@ class MainMenu extends React.Component
 	                        	</Link>
 	                        </ul>
 	                    </li>
-	                    <li>
+	                    <li className={this.props.currentPath == '/parents'}>
 	                        <Link to="/parents">
 	                            <i className="material-icons">person</i>
-	                            <span>Parents</span>
+	                            <span>PARENTS</span>
 	                        </Link>
 	                    </li>
 	                    <li>
 	                        <Link to="/class" className={this.state.conditionClass ? "menu-toggle toggled" :"menu-toggle"} onClick={this.handleClick.bind(this, 'classes')}>
 	                            <i className="material-icons">class</i>
-	                            <span>Class</span>
+	                            <span>CLASS</span>
 	                        </Link>
 	                        <ul className={this.state.conditionClass ? "ml-menu myblock" :"ml-menu mynone"}>
 	                        	<Link to="/manage_class" style={myStyle}>
@@ -108,57 +133,57 @@ class MainMenu extends React.Component
 	                        </ul>
 	                    </li>
 	                    <li>
-	                    	<Link>
+	                    	<Link to="/subjects">
 	                    		<i className="material-icons">subject</i>
-	                            <span>Subject</span>
+	                            <span>SUBJECTS</span>
 	                    	</Link>
 	                    </li>
 	                    <li>
-	                    	<Link>
-	                    		<i className="material-icons">class</i>
-	                            <span>Class Routine</span>
+	                    	<Link to="/fees">
+	                    		<i className="material-icons">payment</i>
+	                            <span>FEES</span>
 	                    	</Link>
 	                    </li>
 	                    <li>
-	                    	<Link>
+	                    	<Link to="/attendance">
 	                    		<i className="material-icons">format_list_bulleted</i>
-	                            <span>Attendance</span>
+	                            <span>ATTENDANCE</span>
 	                    	</Link>
 	                    </li>
 	                    <li>
-	                    	<Link>
+	                    	<Link to="/exam">
 	                    		<i className="material-icons">assignment</i>
-	                            <span>Exam</span>
+	                            <span>EXAM</span>
 	                    	</Link>
 	                    </li>
 	                    <li>
-	                    	<Link>
+	                    	<Link to="/library">
 	                    		<i className="material-icons">account_balance</i>
-	                            <span>Library</span>
+	                            <span>LIBRARY</span>
 	                    	</Link>
 	                    </li>
 	                    <li>
-	                    	<Link>
+	                    	<Link to="/accounting">
 	                    		<i className="material-icons">account_balance_wallet</i>
-	                            <span>Accounting</span>
+	                            <span>ACCOUNTING</span>
 	                    	</Link>
 	                    </li>
 	                    <li>
-	                    	<Link>
+	                    	<Link to="/transport">
 	                    		<i className="material-icons">directions_bus</i>
-	                            <span>Transport</span>
+	                            <span>TRANSPORT</span>
 	                    	</Link>
 	                    </li>
 	                    <li>
-	                    	<Link>
+	                    	<Link to="/notice">
 	                    		<i className="material-icons">chrome_reader_mode</i>
-	                            <span>Notice Board</span>
+	                            <span>NOTICE BOARD</span>
 	                    	</Link>
 	                    </li>
 	                    <li>
-	                    	<Link>
+	                    	<Link to="/help">
 	                    		<i className="material-icons">help_outline</i>
-	                            <span>Help</span>
+	                            <span>HELP</span>
 	                    	</Link>
 	                    </li>
 	                 </ul>   

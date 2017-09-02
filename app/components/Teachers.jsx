@@ -58,7 +58,7 @@ class Teachers extends React.Component
 			      <SearchBar />
 				  <Navigation />
 				  <section>
-				  	<LeftSideBar/>	
+				  	<LeftSideBar currentPath={this.props.location.pathname}/>	
 				  </section>
 				  <section className="content">
 				    	<div className="container-fluid">

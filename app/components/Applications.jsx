@@ -41,13 +41,13 @@ class Applications extends React.Component
     }	
 	render(){
 	   if(this.state.isAdmin)
-	   {
+	   { 
 		   	return (
 			   <div>
 			      <SearchBar />
 				  <Navigation />
 				  <section>
-				  	<LeftSideBar/>	
+				  	<LeftSideBar currentPath={this.props.location.pathname}/>	
 				  </section>
 				  <section className="content">
 				    	<ApplicationsContent />

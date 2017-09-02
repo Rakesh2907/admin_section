@@ -9,7 +9,7 @@ class LeftSideBar extends React.Component
         return (
               <aside id="leftsidebar" className="sidebar">
                   <ProfileNavigation />
-                  <MainMenu />
+                  <MainMenu currentPath={this.props.currentPath}/>
                   <CopyRight />
               </aside>
         );

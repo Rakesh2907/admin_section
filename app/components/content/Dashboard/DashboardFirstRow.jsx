@@ -11,7 +11,7 @@ export default class DashboardFirstRow extends React.Component
             this.state = {
               counts: {
                   students: 0,
-                  teachers: 0,
+                  revenue: 0,
                   parents: 0,
                   visitor: 0  
               }
@@ -27,7 +27,7 @@ export default class DashboardFirstRow extends React.Component
        {
             var that = this;
             $.get({
-                url: 'http://localhost/school_product/admin_con/dashboard_count',
+                url: base_url+'admin_con/dashboard_count',
                 type: 'GET',
                 dataType: 'json',
                 headers: {
@@ -65,8 +65,8 @@ export default class DashboardFirstRow extends React.Component
                             <i className="material-icons">help</i>
                         </div>
                         <div className="content">
-                            <div className="text">TEACHER</div>
-                            <CountTo className="number" to={this.state.counts.teachers} speed={1000} delay={20}/>
+                            <div className="text">REVENUE</div>
+                            <CountTo className="number" to={this.state.counts.revenue} speed={1000} delay={20}/>
                         </div>
                     </div>
                 </div>

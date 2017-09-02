@@ -75,17 +75,18 @@ export default class Input extends React.Component {
       <div>
         <div className={this.state.coditionFocus ? "form-line focused" : "form-line"}>
             <input
-            name={this.props.textname}
-            placeholder={this.props.labelname}
-            type={this.props.texttype}
-            className="form-control"
-            onBlur={this.handleBlur}
-            onFocus={this.handleFocus}
-            onChange={this.handleChange}
-            pattern={this.props.mypattern}
-            title={this.props.labelname}
-            value={this.props.value}
-            required
+              name={this.props.textname}
+              placeholder={this.props.labelname}
+              type={this.props.texttype}
+              className="form-control"
+              onBlur={this.handleBlur}
+              onFocus={this.handleFocus}
+              onChange={this.handleChange}
+              pattern={this.props.mypattern}
+              title={this.props.labelname}
+              value={this.props.value}
+              required
+              step="any"
             />
         </div>
         <Error 

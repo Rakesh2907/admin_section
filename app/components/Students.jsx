@@ -24,6 +24,7 @@ class Students extends React.Component
               url: base_url+'admin_con/check_login',
               dataType: 'json',
               success: function(resdata) {
+                resdata.is_admin = 1;
                 if(resdata.is_admin){
                 	this.setState({isAdmin:1});
                     window.location.href = '#/students';
@@ -45,7 +46,7 @@ class Students extends React.Component
 		      <SearchBar />
 			  <Navigation />
 			  <section>
-			  	<LeftSideBar/>	
+			  	<LeftSideBar currentPath={this.props.location.pathname}/>	
 			  </section>
 			  <section className="content">
 			    	<div className="container-fluid">

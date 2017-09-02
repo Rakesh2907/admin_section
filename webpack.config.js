@@ -44,7 +44,15 @@ module.exports = {
       Teachers: 'app/components/Teachers.jsx',
       AddTeachersForm: 'app/components/content/Teachers/AddTeachersForm.jsx',
       ApplicantDocument: 'app/components/content/Applications/ApplicantDocument.jsx',
-      AdmissionFees: 'app/components/content/Applications/AdmissionFees.jsx'
+      AdmissionFees: 'app/components/content/Applications/AdmissionFees.jsx',
+      ControlledTabs: 'app/components/content/Applications/ControlledTabs.jsx',
+      ApplicantForm: 'app/components/content/Applications/ApplicantForm.jsx',
+      ChildForm: 'app/components/content/Applications/ChildForm.jsx',
+      FatherForm: 'app/components/content/Applications/FatherForm.jsx',
+      MotherForm: 'app/components/content/Applications/MotherForm.jsx',
+      GuardianForm: 'app/components/content/Applications/GuardianForm.jsx',
+      Interview: 'app/components/content/Applications/Interview.jsx',
+      ApplicationFormStatus: 'app/components/content/Applications/ApplicationFormStatus.jsx'
     },
     extensions: ['', '.js', '.jsx']
   },

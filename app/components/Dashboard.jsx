@@ -48,7 +48,7 @@ class Dashboard extends React.Component
 			      <SearchBar />
 				  <Navigation />
 				  <section>
-				  	<LeftSideBar/>	
+				  	<LeftSideBar currentPath={this.props.location.pathname}/>	
 				  </section>
 				  <section className="content">
 				  	 <DashboadContent/>

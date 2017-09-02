@@ -1,9 +1,14 @@
 import React from 'react';
 
-class ApplicantDocument extends React.Component
+export default class ApplicantDocument extends React.Component
 {
       constructor(props) {
           super(props);
+      }
+      componentWillReceiveProps(props) {
+        this.setState({
+           myapplicantData:props.myapplicantData
+        });
       }
       render()
       {
