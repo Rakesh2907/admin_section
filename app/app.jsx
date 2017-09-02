@@ -7,6 +7,16 @@ import Applications from 'Applications';
 import Login from 'Login';
 import Students from 'Students';
 import Teachers from 'Teachers';
+import Parents from 'Parents';
+import Classes from 'Classes';
+import Subjects from 'Subjects';
+import Fees from 'Fees';
+import Attendance from 'Attendance';
+import Exam from 'Exam';
+import Library from 'Library';
+import Accounting from 'Accounting';
+import Transport from 'Transport';
+import Notice from 'Notice';
 
 ReactDOM.render(
   <Router history={hashHistory}>
@@ -17,17 +27,17 @@ ReactDOM.render(
 	   <Route path="add_students" component={Students}/>
 	   <Route path="teachers" component={Teachers}/>
 	   <Route path="add_teacher" component={Teachers}/>
-	   <Route path="parents" component={Teachers}/>
-	   <Route path="class" component={Teachers}/>
-	   <Route path="subjects" component={Teachers}/>
-	   <Route path="fees" component={Teachers}/>
-	   <Route path="attendance" component={Teachers}/>
-	   <Route path="exam" component={Teachers}/>
-	   <Route path="library" component={Teachers}/>
-	   <Route path="accounting" component={Teachers}/>
-	   <Route path="transport" component={Teachers}/>
-	   <Route path="notice" component={Teachers}/>
-	   <Route path="notice" component={Teachers}/>
+	   <Route path="parents" component={Parents}/>
+	   <Route path="class" component={Classes}/>
+	   <Route path="subjects" component={Subjects}/>
+	   <Route path="fees" component={Fees}/>
+	   <Route path="attendance" component={Attendance}/>
+	   <Route path="exam" component={Exam}/>
+	   <Route path="library" component={Library}/>
+	   <Route path="accounting" component={Accounting}/>
+	   <Route path="transport" component={Transport}/>
+	   <Route path="notice" component={Notice}/>
+	   <Route path="help" component={Teachers}/>
 	   <IndexRoute component={Login}/>
     </Route>
   </Router>,

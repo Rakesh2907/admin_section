@@ -52,7 +52,17 @@ module.exports = {
       MotherForm: 'app/components/content/Applications/MotherForm.jsx',
       GuardianForm: 'app/components/content/Applications/GuardianForm.jsx',
       Interview: 'app/components/content/Applications/Interview.jsx',
-      ApplicationFormStatus: 'app/components/content/Applications/ApplicationFormStatus.jsx'
+      ApplicationFormStatus: 'app/components/content/Applications/ApplicationFormStatus.jsx',
+      Parents: 'app/components/Parents.jsx',
+      Classes: 'app/components/Classes.jsx',
+      Subjects: 'app/components/Subjects.jsx',
+      Fees: 'app/components/Fees.jsx',
+      Attendance: 'app/components/Attendance.jsx',
+      Exam: 'app/components/Exam.jsx',
+      Library: 'app/components/Library',
+      Accounting: 'app/components/Accounting',
+      Transport: 'app/components/Transport',
+      Notice: 'app/components/Notice'
     },
     extensions: ['', '.js', '.jsx']
   },

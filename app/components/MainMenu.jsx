@@ -112,13 +112,13 @@ class MainMenu extends React.Component
 	                        	</Link>
 	                        </ul>
 	                    </li>
-	                    <li className={this.props.currentPath == '/parents'}>
+	                    <li className={this.props.currentPath == '/parents' ? "active" :""}>
 	                        <Link to="/parents">
 	                            <i className="material-icons">person</i>
 	                            <span>PARENTS</span>
 	                        </Link>
 	                    </li>
-	                    <li>
+	                    <li className={this.props.currentPath == '/class' ? "active" :""}>
 	                        <Link to="/class" className={this.state.conditionClass ? "menu-toggle toggled" :"menu-toggle"} onClick={this.handleClick.bind(this, 'classes')}>
 	                            <i className="material-icons">class</i>
 	                            <span>CLASS</span>
@@ -132,55 +132,55 @@ class MainMenu extends React.Component
 	                        	</Link>
 	                        </ul>
 	                    </li>
-	                    <li>
+	                    <li className={this.props.currentPath == '/subjects' ? "active" :""}>
 	                    	<Link to="/subjects">
 	                    		<i className="material-icons">subject</i>
 	                            <span>SUBJECTS</span>
 	                    	</Link>
 	                    </li>
-	                    <li>
+	                    <li className={this.props.currentPath == '/fees' ? "active" :""}>
 	                    	<Link to="/fees">
 	                    		<i className="material-icons">payment</i>
 	                            <span>FEES</span>
 	                    	</Link>
 	                    </li>
-	                    <li>
+	                    <li className={this.props.currentPath == '/attendance' ? "active" :""}>
 	                    	<Link to="/attendance">
 	                    		<i className="material-icons">format_list_bulleted</i>
 	                            <span>ATTENDANCE</span>
 	                    	</Link>
 	                    </li>
-	                    <li>
+	                    <li className={this.props.currentPath == '/exam' ? "active" :""}>
 	                    	<Link to="/exam">
 	                    		<i className="material-icons">assignment</i>
 	                            <span>EXAM</span>
 	                    	</Link>
 	                    </li>
-	                    <li>
+	                    <li className={this.props.currentPath == '/library' ? "active" :""}>
 	                    	<Link to="/library">
 	                    		<i className="material-icons">account_balance</i>
 	                            <span>LIBRARY</span>
 	                    	</Link>
 	                    </li>
-	                    <li>
+	                    <li className={this.props.currentPath == '/accounting' ? "active" :""}>
 	                    	<Link to="/accounting">
 	                    		<i className="material-icons">account_balance_wallet</i>
 	                            <span>ACCOUNTING</span>
 	                    	</Link>
 	                    </li>
-	                    <li>
+	                    <li className={this.props.currentPath == '/transport' ? "active" :""}>
 	                    	<Link to="/transport">
 	                    		<i className="material-icons">directions_bus</i>
 	                            <span>TRANSPORT</span>
 	                    	</Link>
 	                    </li>
-	                    <li>
+	                    <li className={this.props.currentPath == '/notice' ? "active" :""}>
 	                    	<Link to="/notice">
 	                    		<i className="material-icons">chrome_reader_mode</i>
 	                            <span>NOTICE BOARD</span>
 	                    	</Link>
 	                    </li>
-	                    <li>
+	                    <li className={this.props.currentPath == '/help' ? "active" :""}>
 	                    	<Link to="/help">
 	                    		<i className="material-icons">help_outline</i>
 	                            <span>HELP</span>
