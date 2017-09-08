@@ -4,6 +4,8 @@ import LeftSideBar from 'LeftSideBar';
 import SearchBar from 'SearchBar';
 import getRouteHandlerBaseUrl  from './helper/js/get-route-handler-base-url';
 import AddStudentForm from './content/Students/AddStudentForm';
+import StudentListing from './content/Students/StudentListing';
+import DeletedStudents from './content/Students/DeletedStudents';
 
 class Students extends React.Component 
 {
@@ -12,14 +14,15 @@ class Students extends React.Component
    			 this.state = {
    			 	isAdmin : 0
    			 }
+         this.loadStudentsComponent = this.loadStudentsComponent.bind(this);
    	}		 
 	componentDidMount()
 	{
     	document.getElementById('admin_body').className='theme-red';
     	this._baseUrl = getRouteHandlerBaseUrl(this.props);
-    }
-    componentWillMount()
-    {
+  }
+  componentWillMount()
+  {
         $.ajax({
               url: base_url+'admin_con/check_login',
               dataType: 'json',
@@ -37,7 +40,20 @@ class Students extends React.Component
                 console.error(err.toString());
               }.bind(this)
           });
-    }
+  }
+  loadStudentsComponent()
+  {
+        //alert(this.props.location.pathname);
+
+        if(this.props.location.pathname == '/students')
+        {
+            return <StudentListing />
+        }else if(this.props.location.pathname == '/add_student'){
+            return <AddStudentForm />
+        }else if(this.props.location.pathname == '/del_student'){
+            return <DeletedStudents/>
+        }
+  }
 	render(){
 	 if(this.state.isAdmin)
 	 {	
@@ -53,7 +69,7 @@ class Students extends React.Component
 						<div className="block-header">
                 			<h2>Student Manager</h2>
             			</div>
-            			<AddStudentForm />
+                  {this.loadStudentsComponent()}
 					</div>
 			  </section>
 		   </div>	

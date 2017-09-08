@@ -90,14 +90,17 @@ class MainMenu extends React.Component
 	                            <span>ADMISSIONS</span>
 	                        </Link>
 	                    </li>
-	                    <li className={this.props.currentPath == '/students' || this.props.currentPath == '/add_students' ? "active" :""}>
+	                    <li className={this.props.currentPath == '/students' || this.props.currentPath == '/add_student' || this.props.currentPath == '/del_student'? "active" :""}>
 	                        <Link to="/students" className={this.state.conditionStudents ? "menu-toggle toggled" :"menu-toggle"} onClick={this.handleClick.bind(this, 'student')}>
 	                            <i className="material-icons">group</i>
 	                            <span>STUDENTS</span>
 	                        </Link>
 	                        <ul className={this.state.conditionStudents ? "ml-menu myblock" :"ml-menu mynone"}>
-	                        	<Link to="/add_students" style={myStyle}>
-	                            	<span>Add Students</span>
+	                        	<Link to="/add_student" style={myStyle}>
+	                            	<span>Add New</span>
+	                        	</Link>
+	                        	<Link to="/del_student" style={myStyle}>
+	                            	<span>Deleted Students</span>
 	                        	</Link>
 	                        </ul>
 	                    </li>

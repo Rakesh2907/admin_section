@@ -24,7 +24,8 @@ ReactDOM.render(
 	   <Route path="dashboard" component={Dashboard}/>
 	   <Route path="applications" component={Applications}/>
 	   <Route path="students" component={Students}/>
-	   <Route path="add_students" component={Students}/>
+	   <Route path="add_student" component={Students}/>
+	   <Route path="del_student" component={Students}/>
 	   <Route path="teachers" component={Teachers}/>
 	   <Route path="add_teacher" component={Teachers}/>
 	   <Route path="parents" component={Parents}/>
