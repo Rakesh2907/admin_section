@@ -205,16 +205,7 @@ export default class ApplicationTableListing extends React.Component
                      <div className="card">
                          <div className="header">
                             <h2>APPLICANT DETAILS</h2>
-                            <ul className="header-dropdown m-r--5">
-                                <li className="dropdown">
-                                    <a href="javascript:void(0);" className="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-                                        <i className="material-icons">more_vert</i>
-                                    </a>
-                                    <ul className="dropdown-menu pull-right">
-                                        <li><a href="javascript:void(0);" onClick={this.close}>Close</a></li>
-                                    </ul>
-                                </li>
-                            </ul>
+                            <a onClick={this.close} href="javascript:void(0)" style={{float:'right',position: 'relative',bottom:'22px'}}><i className="material-icons">close</i></a>
                         </div>
                          <Panel collapsible expanded={this.state.showEditModal}>
                               <ControlledTabs statusApplicant={statusApplicant} myapplicantData={myapplicantData}/>

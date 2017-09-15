@@ -1,5 +1,6 @@
 import React from 'react';
 import {Link, IndexLink} from 'react-router';
+import { Scrollbars } from 'react-custom-scrollbars';
 
 class MainMenu extends React.Component
 {
@@ -75,6 +76,14 @@ class MainMenu extends React.Component
 		   }
 		   //alert(this.props.currentPath);
         	return (
+        		<Scrollbars 
+	        		autoHeight
+	        		autoHeightMin={100}
+	        		autoHeightMax={800}
+	        		autoHide
+	     			autoHideTimeout={1000}
+	        		autoHideDuration={200}
+        		>
         		<div className="menu">
         			<ul className="list">
                     	<li className="header">MAIN NAVIGATION</li>
@@ -191,6 +200,7 @@ class MainMenu extends React.Component
 	                    </li>
 	                 </ul>   
         		</div>
+        		</Scrollbars>
         	);
         }
 }

@@ -10,6 +10,8 @@ import ApplicantDocument from 'ApplicantDocument';
 import AdmissionFees from 'AdmissionFees';
 import ApplicationFormStatus from 'ApplicationFormStatus';
 var occuItems = [];
+var classId = 0;
+var admissionYear = '';
 export default class ControlledTabs extends React.Component
 {
       constructor(props) {
@@ -105,16 +107,18 @@ export default class ControlledTabs extends React.Component
               type: 'POST',
               data:{
                   applicant_id: applicant_id,
-                  child_id: child_id
+                  child_id: child_id,
+                  class_id: classId,
+                  admission_year: admissionYear
               },
               success: function(resdata) {
                 if(resdata.length > 0)
                 {
-                    $("input[name='tution_fee']").val(resdata[0]['tution_fee']);
-                    $("input[name='admission_fee']").val(resdata[0]['admission_fee']);
+                    $("input[name='tution_fee']").val(resdata[0]['tution_fees']);
+                    $("input[name='admission_fee']").val(resdata[0]['admission_fees']);
                     $("input[name='annual_funds']").val(resdata[0]['annual_funds']);
                     $("input[name='practical_charges']").val(resdata[0]['practical_charges']);
-                    $("input[name='test_session']").val(resdata[0]['test_session']);
+                    $("input[name='test_session']").val(resdata[0]['exam_fees']);
                 }
               }.bind(this),
               error: function(xhr, status, err) {
@@ -177,6 +181,8 @@ export default class ControlledTabs extends React.Component
                             convert_to_students: resdata[0]['convert_to_student'],
                             child_id: resdata[0]['child_id']
                        });
+                       classId = resdata[0]['class_id'];
+                       admissionYear = resdata[0]['admission_years']; 
                    }
                }
              }.bind(this),

@@ -49,7 +49,8 @@ class Students extends React.Component
         {
             return <StudentListing />
         }else if(this.props.location.pathname == '/add_student'){
-            return <AddStudentForm />
+            var myStudents = [];
+            return <AddStudentForm Students={myStudents}/>
         }else if(this.props.location.pathname == '/del_student'){
             return <DeletedStudents/>
         }

@@ -62,7 +62,14 @@ module.exports = {
       Library: 'app/components/Library',
       Accounting: 'app/components/Accounting',
       Transport: 'app/components/Transport',
-      Notice: 'app/components/Notice'
+      Notice: 'app/components/Notice',
+      AddStudentForm: 'app/components/content/Students/AddStudentForm.jsx',
+      CandidateForm: 'app/components/content/Students/CandidateForm.jsx',
+      CourseBatch: 'app/components/content/Students/CourseBatch.jsx',
+      StudentFather: 'app/components/content/Students/StudentFather.jsx',
+      StudentMother: 'app/components/content/Students/StudentMother.jsx',
+      StudentDocuments: 'app/components/content/Students/StudentDocuments.jsx',
+      StudentFees: 'app/components/content/Students/StudentFees.jsx'
     },
     extensions: ['', '.js', '.jsx']
   },
