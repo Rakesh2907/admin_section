@@ -65,7 +65,7 @@ export default class AddStudentForm extends React.Component
 	      case 0:
 	        return  <CandidateForm Students={this.props.Students}/>;
 	      case 1:
-	        return  <CourseBatch />;   
+	        return  <CourseBatch Students={this.props.Students}/>;   
 	      case 2:
 	        return  <StudentFather />;
 	      case 3:

@@ -27,7 +27,8 @@ export default class CandidateForm extends React.Component
      		states: 'Maharashtra',
      		city: '',
      		email: '',
-     		blood_group: 'unknown'
+     		blood_group: 'unknown',
+        Students: props.Students
      	}
      	this.handleChangeFname = this.handleChangeFname.bind(this);
      	this.handleChangeLname = this.handleChangeLname.bind(this);
@@ -87,7 +88,7 @@ export default class CandidateForm extends React.Component
       var mystate = this.state.states;
       var mynationality = this.state.nationality;
       var myblood = this.state.blood_group;
-      if(typeof this.props.Students['child_id']!='undefined'){
+      if(typeof this.props.Students!='undefined'){
           var myUrl =  base_url+'students_con/edit_student';
           var myData = $('#myform1').serialize()+'&states='+mystate+'&nationality='+mynationality+'&blood_group='+myblood+'&child_id='+this.props.Students['child_id']+'&student_id='+this.props.Students['student_id'];
       }else{
@@ -122,7 +123,7 @@ export default class CandidateForm extends React.Component
     }
     componentDidMount(){
 
-      if(typeof this.props.Students['child_id']!='undefined'){
+      if(typeof this.props.Students!='undefined'){
           $.ajax({
                     type: 'POST',
                     url: base_url+'students_con/get_candidate_details',
