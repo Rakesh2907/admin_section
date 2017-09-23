@@ -9,12 +9,12 @@ import TextField from 'material-ui/TextField';
 
 var menuItems4 = [];
 var menuItems5 = [];
+const todayDate = new Date();
 export default class StudentFather extends React.Component
 {
 	constructor(props) 
     {
     	super(props);
-    	const todayDate = new Date();
     	this.state = {
     		father_full_name:'',
         father_adhar_card:'',
@@ -87,10 +87,18 @@ export default class StudentFather extends React.Component
       var myeducation = this.state.father_education;
       var myoccupation = this.state.father_occupation;
 
+       if(typeof this.props.Students!='undefined'){
+            var myUrl =  base_url+'students_con/edit_father';
+            var myData = $('#myform3').serialize()+'&father_state='+mystate+'&father_education='+myeducation+'&father_occupation='+myoccupation+'&student_id='+this.props.Students['student_id']+'&father_id='+this.props.Students['father_id'];
+       }else{
+            var myUrl =  base_url+'students_con/save_father';
+            var myData = $('#myform3').serialize()+'&father_state='+mystate+'&father_education='+myeducation+'&father_occupation='+myoccupation+'&student_id='+studentId;
+       }
+
        $.ajax({
                       type: 'POST',
-                      url: base_url+'students_con/save_father',
-                      data: $('#myform3').serialize()+'&father_state='+mystate+'&father_education='+myeducation+'&father_occupation='+myoccupation+'&student_id='+studentId,
+                      url: myUrl,
+                      data: myData,
                       dataType: 'json',
                       success: function (resdata) {
                           sessionStorage.setItem('sess_student_id', resdata.student_id);
@@ -108,8 +116,49 @@ export default class StudentFather extends React.Component
                       }.bind(this)
       });
     }
-    componentDidMount(){
+    componentDidMount()
+    {
+        if(typeof this.props.Students!='undefined'){
+            $.ajax({
+                    type: 'POST',
+                    url: base_url+'students_con/get_father_details',
+                    data: {
+                      father_id: this.props.Students['father_id'],
+                    },
+                    dataType: 'json',
+                    success: function (resdata) {
+                      if(resdata.length > 0)
+                      {
 
+                          if(resdata[0]['father_dob'] == '0000-00-00'){
+                              resdata[0]['father_dob'] = todayDate.getFullYear()+'-'+(todayDate.getMonth()+1)+'-'+todayDate.getDate();
+                          }
+
+                          this.setState({ 
+                              father_full_name: resdata[0]['father_full_name'],
+                              father_adhar_card: resdata[0]['father_adhar_card'], 
+                              father_mobile: resdata[0]['father_mobile'],
+                              dob: new Date(resdata[0]['father_dob']),
+                              father_office_add1: resdata[0]['office_address1'],
+                              father_office_add2: resdata[0]['office_address2'],
+                              father_city: resdata[0]['city'], 
+                              father_state: resdata[0]['state'],
+                              father_education: resdata[0]['father_qualification'],
+                              father_occupation: resdata[0]['father_occupation'],
+                              father_email: resdata[0]['father_email'],
+                              father_income: Math.round(resdata[0]['income']),
+                          }, function(){$('input[name=dob]').trigger('change')});
+                      }else{
+                      }
+                    }.bind(this),
+                      error: function(xhr, status, err) {
+                        console.error(err.toString());
+                      }.bind(this)
+            });
+        }
+    }
+    componentWillMount(){
+        
     	menuItems4 = [];
            $.ajax({
                 type: 'POST',
@@ -163,20 +212,24 @@ export default class StudentFather extends React.Component
       	const {father_full_name,father_adhar_card,dob,father_education,father_occupation,father_income,father_email,father_office_add1,father_office_add2,father_state,father_city,father_mobile} = this.state;
     	return(
     		<ValidatorForm id="myform3" ref="form" onSubmit={this.handleSubmit.bind(this)} onError={errors => console.log(errors)}>
-    			<TextValidator
-                      floatingLabelText="Full Name"
-                      floatingLabelStyle={styles.floatingLabelStyle}
-                      inputStyle={styles.floatingLabelStyle}
-                      underlineStyle={styles.underlineStyle}
-                      onChange={this.handleChangeFname}
-                      name="father_full_name"
-                      type="text"
-                      value={father_full_name}
-                      validators={['required']}
-                      errorMessages={['this field is required']}
-                      id="father_full_name"
-                      fullWidth={true}
-            	/><br/>
+        <div className="row clearfix">
+             <div className="col-sm-6">
+          			<TextValidator
+                            floatingLabelText="Full Name"
+                            floatingLabelStyle={styles.floatingLabelStyle}
+                            inputStyle={styles.floatingLabelStyle}
+                            underlineStyle={styles.underlineStyle}
+                            onChange={this.handleChangeFname}
+                            name="father_full_name"
+                            type="text"
+                            value={father_full_name}
+                            validators={['required']}
+                            errorMessages={['this field is required']}
+                            id="father_full_name"
+                            fullWidth={true}
+                  	/>
+              </div>
+             <div className="col-sm-6">       
               <TextValidator
                 floatingLabelText="Aadhar Card"
                 floatingLabelStyle={styles.floatingLabelStyle}
@@ -190,169 +243,205 @@ export default class StudentFather extends React.Component
                 validators={['isNumber']}
                 errorMessages={['enter only number']}
                 fullWidth={true}
-            /><br />
-            	<DatePicker 
-              		floatingLabelText="Birth Date"
-              		floatingLabelStyle={styles.floatingLabelStyle}
-	            	  inputStyle={styles.floatingLabelStyle}
-	            	  underlineStyle={styles.underlineStyle}
-              		onChange={this.handleChangeDob}
-              		openToYearSelection={true} 
-              		fullWidth={true} 
-              		validators={['required']}
-                	errorMessages={['this field is required']}
-              		name="dob" 
-              		id="dob" 
-              		value={this.state.dob}
-              		defaultDate={dob}
-              		autoOk={true}
-            /><br />
-            <SelectValidator 
-                  name="father_education" 
-                  floatingLabelText="Education"
-                  floatingLabelStyle={styles.floatingLabelStyle}
-	              inputStyle={styles.floatingLabelStyle}
-	              labelStyle={styles.floatingLabelStyle}
-	              underlineStyle={styles.underlineStyle}
-                  value={father_education}
-                  defaultValue={father_education}
-                  onChange={this.handleChangeEducation}
-                  id="father_education"
-                  validators={['required']}
-                  errorMessages={['this field is required']}
-                  fullWidth={true}
-                >
-                  <MenuItem value={null} primaryText="" />
-                  <MenuItem value="ssc" primaryText="SSC" />
-                  <MenuItem value="hsc" primaryText="HSC" />
-                  <MenuItem value="graduation" primaryText="Graduate" />
-                  <MenuItem value="post_graduation" primaryText="Post Graduate" />
-                  <MenuItem value="doctorate" primaryText="Doctorate" />
-                  <MenuItem value="others" primaryText="Others" />
-            </SelectValidator>
-            <SelectValidator 
-                  name="father_occupation" 
-                  floatingLabelText="Occupation"
-                  floatingLabelStyle={styles.floatingLabelStyle}
-	              inputStyle={styles.floatingLabelStyle}
-	              labelStyle={styles.floatingLabelStyle}
-	              underlineStyle={styles.underlineStyle}
-                  value={father_occupation}
-                  defaultValue={father_occupation}
-                  onChange={this.handleChangeOccupation}
-                  id="father_occupation"
-                  fullWidth={true}
-                >
-                  {menuItems4}
-            </SelectValidator>
-             <TextValidator
-                floatingLabelText="Income (month)"
-                floatingLabelStyle={styles.floatingLabelStyle}
-	              inputStyle={styles.floatingLabelStyle}
-	              labelStyle={styles.floatingLabelStyle}
-	              underlineStyle={styles.underlineStyle}
-                onChange={this.handleChangeIncome}
-                name="father_income"
-                type="text"
-                value={father_income}
-                id="father_income"
-                validators={['isNumber']}
-                errorMessages={['enter only number']}
-                fullWidth={true}
-            /><br />
-            <TextValidator
-                    floatingLabelText="Email"
+              />
+            </div>
+            </div> 
+            <div className="row clearfix">
+               <div className="col-sm-6">  
+                  	<DatePicker 
+                    		floatingLabelText="Birth Date"
+                    		floatingLabelStyle={styles.floatingLabelStyle}
+      	            	  inputStyle={styles.floatingLabelStyle}
+      	            	  underlineStyle={styles.underlineStyle}
+                    		onChange={this.handleChangeDob}
+                    		openToYearSelection={true} 
+                    		fullWidth={true} 
+                    		validators={['required']}
+                      	errorMessages={['this field is required']}
+                    		name="dob" 
+                    		id="dob" 
+                    		value={this.state.dob}
+                    		defaultDate={dob}
+                    		autoOk={true}
+                    />
+              </div>
+            <div className="col-sm-6">
+                <SelectValidator 
+                      name="father_education" 
+                      floatingLabelText="Education"
+                      floatingLabelStyle={styles.floatingLabelStyle}
+    	                inputStyle={styles.floatingLabelStyle}
+    	                labelStyle={styles.floatingLabelStyle}
+    	                underlineStyle={styles.underlineStyle}
+                      value={father_education}
+                      defaultValue={father_education}
+                      onChange={this.handleChangeEducation}
+                      id="father_education"
+                      validators={['required']}
+                      errorMessages={['this field is required']}
+                      fullWidth={true}
+                    >
+                      <MenuItem value={null} primaryText="" />
+                      <MenuItem value="ssc" primaryText="SSC" />
+                      <MenuItem value="hsc" primaryText="HSC" />
+                      <MenuItem value="graduation" primaryText="Graduate" />
+                      <MenuItem value="post_graduation" primaryText="Post Graduate" />
+                      <MenuItem value="doctorate" primaryText="Doctorate" />
+                      <MenuItem value="others" primaryText="Others" />
+                </SelectValidator>
+            </div>
+           </div> 
+           <div className="row clearfix">
+               <div className="col-sm-6">  
+                  <SelectValidator 
+                        name="father_occupation" 
+                        floatingLabelText="Occupation"
+                        floatingLabelStyle={styles.floatingLabelStyle}
+      	              inputStyle={styles.floatingLabelStyle}
+      	              labelStyle={styles.floatingLabelStyle}
+      	              underlineStyle={styles.underlineStyle}
+                        value={father_occupation}
+                        defaultValue={father_occupation}
+                        onChange={this.handleChangeOccupation}
+                        id="father_occupation"
+                        fullWidth={true}
+                      >
+                        {menuItems4}
+                  </SelectValidator>
+               </div> 
+               <div className="col-sm-6"> 
+                 <TextValidator
+                    floatingLabelText="Income (month)"
                     floatingLabelStyle={styles.floatingLabelStyle}
-	            	    inputStyle={styles.floatingLabelStyle}
-	            	    labelStyle={styles.floatingLabelStyle}
-	            	    underlineStyle={styles.underlineStyle}
-                    onChange={this.handleChangeEmail}
-                    name="father_email"
-                    type="email"
-                    value={father_email}
-                    id="father_email"
-                    validators={['required','isEmail']}
-                    errorMessages={['this field is required','enter valid email']}
+    	              inputStyle={styles.floatingLabelStyle}
+    	              labelStyle={styles.floatingLabelStyle}
+    	              underlineStyle={styles.underlineStyle}
+                    onChange={this.handleChangeIncome}
+                    name="father_income"
+                    type="text"
+                    value={father_income}
+                    id="father_income"
+                    validators={['isNumber']}
+                    errorMessages={['enter only number']}
                     fullWidth={true}
-            /><br />
-            <TextValidator
-                  name="father_office_add1"
-                  floatingLabelText="Office/Home Address1"
-                  floatingLabelStyle={styles.floatingLabelStyle}
-	                inputStyle={styles.floatingLabelStyle}
-	                labelStyle={styles.floatingLabelStyle}
-	                underlineStyle={styles.underlineStyle}
-                  onChange={this.handleChangeAddress1}
-                  id="father_office_add1"
-                  value={father_office_add1}
-                  validators={['required']}
-                  errorMessages={['this field is required']}
-                  fullWidth={true}
-            /><br />
-            <TextField
-                  name="father_office_add2"
-                  floatingLabelText="Office/Home Address2"
-                  floatingLabelStyle={styles.floatingLabelStyle}
-	                inputStyle={styles.floatingLabelStyle}
-	                labelStyle={styles.floatingLabelStyle}
-	                underlineStyle={styles.underlineStyle}
-                  onChange={this.handleChangeAddress2}
-                  id="father_office_add2"
-                  value={father_office_add2}
-                  fullWidth={true}
-            /><br />
-            <TextField
-                  name="father_city"
-                  floatingLabelText="City"
-                  id="father_city"
-                  floatingLabelStyle={styles.floatingLabelStyle}
-	                inputStyle={styles.floatingLabelStyle}
-	                labelStyle={styles.floatingLabelStyle}
-	                underlineStyle={styles.underlineStyle}
-                  value={father_city}
-                  validators={['required']}
-                  errorMessages={['this field is required']}
-                  onChange={this.handleChangeCity}
-                  fullWidth={true}
-            /><br />
-            <SelectValidator 
-                  name="father_state" 
-                  floatingLabelText="States"
-                  floatingLabelStyle={styles.floatingLabelStyle}
-	              inputStyle={styles.floatingLabelStyle}
-	              labelStyle={styles.floatingLabelStyle}
-	              underlineStyle={styles.underlineStyle}
-                  value={father_state}
-                  defaultValue={father_state}
-                  onChange={this.handleChangeStates}
-                  validators={['required']}
-                  errorMessages={['this field is required']}
-                  id="father_state"
-                  fullWidth={true}
-                >
-                {menuItems5}
-            </SelectValidator> <br />
-            <TextValidator
-                floatingLabelText="Mobile"
-                floatingLabelStyle={styles.floatingLabelStyle}
-                inputStyle={styles.floatingLabelStyle}
-                labelStyle={styles.floatingLabelStyle}
-                underlineStyle={styles.underlineStyle}
-                onChange={this.handleChangeMobile}
-                name="father_mobile"
-                type="text"
-                value={father_mobile}
-                id="father_mobile"
-                validators={['required','isNumber']}
-                errorMessages={['this field is required','enter only number']}
-                fullWidth={true}
-            /> <br />
-            	<RaisedButton 
-                  style={{marginRight: 12}} 
-                  primary={true}
-                  type="submit"
-                  label="Save" 
-               />
+                />
+            </div>
+            </div>
+            <div className="row clearfix">
+               <div className="col-sm-6">
+                  <TextValidator
+                          floatingLabelText="Email"
+                          floatingLabelStyle={styles.floatingLabelStyle}
+      	            	    inputStyle={styles.floatingLabelStyle}
+      	            	    labelStyle={styles.floatingLabelStyle}
+      	            	    underlineStyle={styles.underlineStyle}
+                          onChange={this.handleChangeEmail}
+                          name="father_email"
+                          type="email"
+                          value={father_email}
+                          id="father_email"
+                          validators={['required','isEmail']}
+                          errorMessages={['this field is required','enter valid email']}
+                          fullWidth={true}
+                  />
+              </div>
+              <div className="col-sm-6">    
+                <TextValidator
+                      name="father_office_add1"
+                      floatingLabelText="Office/Home Address1"
+                      floatingLabelStyle={styles.floatingLabelStyle}
+    	                inputStyle={styles.floatingLabelStyle}
+    	                labelStyle={styles.floatingLabelStyle}
+    	                underlineStyle={styles.underlineStyle}
+                      onChange={this.handleChangeAddress1}
+                      id="father_office_add1"
+                      value={father_office_add1}
+                      validators={['required']}
+                      errorMessages={['this field is required']}
+                      fullWidth={true}
+                />
+              </div> 
+             </div> 
+             <div className="row clearfix">
+               <div className="col-sm-6">  
+                  <TextField
+                        name="father_office_add2"
+                        floatingLabelText="Office/Home Address2"
+                        floatingLabelStyle={styles.floatingLabelStyle}
+      	                inputStyle={styles.floatingLabelStyle}
+      	                labelStyle={styles.floatingLabelStyle}
+      	                underlineStyle={styles.underlineStyle}
+                        onChange={this.handleChangeAddress2}
+                        id="father_office_add2"
+                        value={father_office_add2}
+                        fullWidth={true}
+                  />
+               </div>
+               <div className="col-sm-6">   
+                  <TextField
+                        name="father_city"
+                        floatingLabelText="City"
+                        id="father_city"
+                        floatingLabelStyle={styles.floatingLabelStyle}
+      	                inputStyle={styles.floatingLabelStyle}
+      	                labelStyle={styles.floatingLabelStyle}
+      	                underlineStyle={styles.underlineStyle}
+                        value={father_city}
+                        validators={['required']}
+                        errorMessages={['this field is required']}
+                        onChange={this.handleChangeCity}
+                        fullWidth={true}
+                  />
+               </div>
+              </div>
+              <div className="row clearfix">
+               <div className="col-sm-6">     
+                  <SelectValidator 
+                        name="father_state" 
+                        floatingLabelText="States"
+                        floatingLabelStyle={styles.floatingLabelStyle}
+      	              inputStyle={styles.floatingLabelStyle}
+      	              labelStyle={styles.floatingLabelStyle}
+      	              underlineStyle={styles.underlineStyle}
+                        value={father_state}
+                        defaultValue={father_state}
+                        onChange={this.handleChangeStates}
+                        validators={['required']}
+                        errorMessages={['this field is required']}
+                        id="father_state"
+                        fullWidth={true}
+                      >
+                      {menuItems5}
+                  </SelectValidator>
+               </div>
+               <div className="col-sm-6">   
+                  <TextValidator
+                      floatingLabelText="Mobile"
+                      floatingLabelStyle={styles.floatingLabelStyle}
+                      inputStyle={styles.floatingLabelStyle}
+                      labelStyle={styles.floatingLabelStyle}
+                      underlineStyle={styles.underlineStyle}
+                      onChange={this.handleChangeMobile}
+                      name="father_mobile"
+                      type="text"
+                      value={father_mobile}
+                      id="father_mobile"
+                      validators={['required','isNumber']}
+                      errorMessages={['this field is required','enter only number']}
+                      fullWidth={true}
+                  /> 
+               </div> 
+             </div> 
+             <div className="row clearfix"> 
+                <div className="col-sm-6">
+                	<RaisedButton 
+                      style={{marginRight: 12}} 
+                      primary={true}
+                      type="submit"
+                      label="Save" 
+                   />
+               </div> 
+            </div>  
     		</ValidatorForm>
     	);
     }

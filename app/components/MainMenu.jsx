@@ -108,9 +108,6 @@ class MainMenu extends React.Component
 	                        	<Link to="/add_student" style={myStyle}>
 	                            	<span>Add New</span>
 	                        	</Link>
-	                        	<Link to="/del_student" style={myStyle}>
-	                            	<span>Deleted Students</span>
-	                        	</Link>
 	                        </ul>
 	                    </li>
 	                    <li className={this.props.currentPath == '/teachers' || this.props.currentPath == '/add_teacher'? "active" :""}>

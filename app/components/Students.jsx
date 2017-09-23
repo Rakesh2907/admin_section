@@ -68,7 +68,7 @@ class Students extends React.Component
 			  <section className="content">
 			    	<div className="container-fluid">
 						<div className="block-header">
-                			<h2>Student Manager</h2>
+                			<h2>STUDENT MANAGER</h2>
             			</div>
                   {this.loadStudentsComponent()}
 					</div>

@@ -6,6 +6,7 @@ import {black500, blue500} from 'material-ui/styles/colors';
 import { DataTable } from 'react-data-components';
 import {Button, Modal, Tabs, Tab, Panel} from 'react-bootstrap';
 import ReactTags from 'react-tag-autocomplete';
+import {RadioButton, RadioButtonGroup} from 'material-ui/RadioButton';
 import AddStudentForm from 'AddStudentForm';
 
 var studentID = 0;
@@ -73,7 +74,6 @@ class ActionSubMenu extends React.Component
                         <ul className="dropdown-menu pull-right" style={_style}>
                             <li><a className=" waves-effect waves-block" href="javascript:void(0)" onClick={this.handleEdit.bind(this,this.props.studentId,this.props.childId,this.props.classId,this.props.myStudent)}>EDIT</a></li>
                             <li><a className=" waves-effect waves-block" href="javascript:void(0)" onClick={this.handleDelete.bind(this)}>DELETE</a></li>
-                            <li><a className=" waves-effect waves-block" href="javascript:void(0)" onClick={this.handleCopy.bind(this,this.props.childId)}>COPY</a></li>
                         </ul>
                         <Modal show={this.state.modalShow} onHide={this.noDelete} container={this} aria-labelledby="contained-modal-title">
                         <Modal.Header closeButton>
@@ -135,20 +135,18 @@ export default class StudentListing extends React.Component
     			{ title: 'Mobile', prop: 'mobile'},
     			{ title: 'Fees Status', prop: 'fee_status'},
     			{ title: 'Registration Number', prop: 'registration_number'},
+                { title: 'Year' ,prop: 'year'},
                 { title: 'Actions', prop: 'actions'}
     		],
     		filterVisible:false,
             admissionFDate: todayDate,
             admissionTDate: todayDate,
-            formatedFDate:todayDate,
-            formatedTDate:todayDate,
-            tags: [
-                 { id: 1, name: "Nursery" },
-                 { id: 2, name: "KG" },
-                 { id: 3, name: "I"}
-            ],
+            formatedFDate: this.formatDate(todayDate),
+            formatedTDate: this.formatDate(todayDate),
+            tags: [],
             suggestions: [],
-            showEditModal: false
+            showEditModal: false,
+            gender:'all'
     	}
     	this.filter = this.filter.bind(this);
         this.handleChangeFDate = this.handleChangeFDate.bind(this);
@@ -156,7 +154,11 @@ export default class StudentListing extends React.Component
         this.resetFilter = this.resetFilter.bind(this);
         this.open = this.open.bind(this);
         this.close = this.close.bind(this);
+        this.handleGender = this.handleGender.bind(this);
     } 
+    handleGender(){
+        this.setState({gender:$('input[name=gender]:checked').val()});
+    }
     open(){
         this.setState({ showEditModal: true });
     }
@@ -185,11 +187,16 @@ export default class StudentListing extends React.Component
     }
     componentDidMount()
     {
+            this.setState({filterVisible:true});
     		var that = this;
     		$.get({
     			url: base_url+'students_con/student_list',
-    			type: 'GET',
+    			type: 'POST',
     			dataType: 'json',
+                data:{
+                    from_date : this.state.formatedFDate,
+                    to_date: this.state.formatedTDate,
+                },    
     			success: function(res){
 
                     for(var i = 0;i < res.length;i++)
@@ -227,7 +234,10 @@ export default class StudentListing extends React.Component
         that.setState({
             admissionFDate:'',
             admissionTDate: '',
-            tags:[]
+            formatedFDate:'',
+            formatedTDate:'',
+            tags:[],
+            gender:'all'
         });
         $.get({
                 url: base_url+'students_con/student_list',
@@ -236,9 +246,14 @@ export default class StudentListing extends React.Component
                 data:{
                     from_date : '',
                     to_date: '',
-                    selected_class: ''
+                    selected_class: '',
+                    gender:'all'
                 },
                 success: function(res) { 
+                    for(var i = 0;i < res.length;i++)
+                    {
+                        res[i]['actions'] = <ActionMenu studentId={res[i]['student_id']} childId={res[i]['child_id']} classId={res[i]['class_id']} myStudent={res[i]}/> 
+                    }
                     that.setState({
                             data: res
                     });
@@ -262,9 +277,14 @@ export default class StudentListing extends React.Component
                 data:{
                     from_date : this.state.formatedFDate,
                     to_date: this.state.formatedTDate,
-                    selected_class: selectedNew
+                    selected_class: selectedNew,
+                    gender: this.state.gender
                 },
                 success: function(res) { 
+                    for(var i = 0;i < res.length;i++)
+                    {
+                        res[i]['actions'] = <ActionMenu studentId={res[i]['student_id']} childId={res[i]['child_id']} classId={res[i]['class_id']} myStudent={res[i]}/> 
+                    }
                     that.setState({
                             data: res
                     });
@@ -277,7 +297,7 @@ export default class StudentListing extends React.Component
     }
 	render(){
 			var _style = {
-                    display:"none"   
+                display:"none"   
           	};
             var _inlineStyle = {
                 marginRight: 10
@@ -289,6 +309,12 @@ export default class StudentListing extends React.Component
             },
             underlineStyle: {
                 borderColor: black500,
+            },
+            radioButton: {
+                marginBottom: 0,
+                display:"inline-block",
+                width:"25%",
+                paddingTop: 15
             }
         }
 
@@ -298,73 +324,85 @@ export default class StudentListing extends React.Component
                 myfilter = (
                     <div className="body">
                      <form id="filter_form" onSubmit={this.handleSubmit.bind(this)}>
-                        <div className="1">
-                            <div className="col-sm-4">
-                                                <div className="form-group">
-                                                    <h2 className="card-inside-title" style={{float:'right'}}>Admission Dates:</h2>
-                                                </div>
+                         <div className="row clearfix">
+                            <div className="col-sm-6">
+                                <DatePicker 
+                                    floatingLabelText="Admission From Date"
+                                    floatingLabelStyle={styles.floatingLabelStyle}
+                                    inputStyle={styles.floatingLabelStyle}
+                                    underlineStyle={styles.underlineStyle}
+                                    onChange={this.handleChangeFDate}
+                                    fullWidth={true} 
+                                    validators={['required']}
+                                    errorMessages={['this field is required']}
+                                    name="admission_fdate" 
+                                    id="admission_fdate" 
+                                    value={this.state.admissionFDate}
+                                    defaultDate={this.state.admissionFDate}
+                                    autoOk={true}
+                                    container="inline"
+                                 />         
                             </div>
-                            <div className="col-sm-4">
-                                                <div className="form-group">
-                                                         <DatePicker 
-                                                                floatingLabelText="From Date"
-                                                                floatingLabelStyle={styles.floatingLabelStyle}
-                                                                inputStyle={styles.floatingLabelStyle}
-                                                                underlineStyle={styles.underlineStyle}
-                                                                onChange={this.handleChangeFDate}
-                                                                fullWidth={false} 
-                                                                validators={['required']}
-                                                                errorMessages={['this field is required']}
-                                                                name="admission_fdate" 
-                                                                id="admission_fdate" 
-                                                                value={this.state.admissionFDate}
-                                                                defaultDate={this.state.admissionFDate}
-                                                                autoOk={true}
-                                                                container="inline"
-                                                         />   
-                                                </div>
-                            </div>
-                            <div className="col-sm-4">
-                                                <div className="form-group">
-                                                        <DatePicker 
-                                                                floatingLabelText="To Date"
-                                                                floatingLabelStyle={styles.floatingLabelStyle}
-                                                                inputStyle={styles.floatingLabelStyle}
-                                                                underlineStyle={styles.underlineStyle}
-                                                                onChange={this.handleChangeTDate}
-                                                                fullWidth={false} 
-                                                                validators={['required']}
-                                                                errorMessages={['this field is required']}
-                                                                name="admission_fdate" 
-                                                                id="admission_fdate" 
-                                                                value={this.state.admissionTDate}
-                                                                defaultDate={this.state.admissionTDate}
-                                                                autoOk={true}
-                                                                container="inline"
-                                                         />  
-                                                </div>
+                            <div className="col-sm-6">
+                                <DatePicker 
+                                    floatingLabelText="Admission To Date"
+                                    floatingLabelStyle={styles.floatingLabelStyle}
+                                    inputStyle={styles.floatingLabelStyle}
+                                    underlineStyle={styles.underlineStyle}
+                                    onChange={this.handleChangeTDate}
+                                    fullWidth={true} 
+                                    validators={['required']}
+                                    errorMessages={['this field is required']}
+                                    name="admission_fdate" 
+                                    id="admission_fdate" 
+                                    value={this.state.admissionTDate}
+                                    defaultDate={this.state.admissionTDate}
+                                    autoOk={true}
+                                    container="inline"
+                                />                   
                             </div>
                         </div>
-                        <div className="2">
-                            <div className="col-sm-4">
-                                <div className="form-group">
-                                                    <h2 className="card-inside-title" style={{float:'right'}}>Select Class:</h2>
-                                </div>
+                         <div className="row clearfix">
+                            <div className="col-sm-6">
+                                        <ReactTags tags={this.state.tags} suggestions={this.state.suggestions} handleDelete={this.handleDelete.bind(this)} handleAddition={this.handleAddition.bind(this)} placeholder="Select One or More Classes/standard" minQueryLength={1}/>             
                             </div>
-                            <div className="col-sm-4">
-                                <div className="form-group">
-                                        <ReactTags tags={this.state.tags} suggestions={this.state.suggestions} handleDelete={this.handleDelete.bind(this)} handleAddition={this.handleAddition.bind(this)} placeholder="Select One or More Classes" minQueryLength={1}/>             
-                                </div>
+                            <div className="col-sm-6">
+                                <RadioButtonGroup name="gender" labelPosition="right" defaultSelected="all" style={styles.block}>
+                                      <RadioButton
+                                        value="all"
+                                        label="ALL"
+                                        style={styles.radioButton}
+                                        labelStyle={styles.floatingLabelStyle}
+                                        inputStyle={styles.floatingLabelStyle}
+                                        iconStyle={styles.floatingLabelStyle}
+                                        onClick={this.handleGender}
+                                      />
+                                      <RadioButton
+                                        value="male"
+                                        label="MALE"
+                                        style={styles.radioButton}
+                                        labelStyle={styles.floatingLabelStyle}
+                                        inputStyle={styles.floatingLabelStyle}
+                                        iconStyle={styles.floatingLabelStyle}
+                                        onClick={this.handleGender}
+                                      />
+                                      <RadioButton
+                                        value="female"
+                                        label="FEMALE"
+                                        style={styles.radioButton}
+                                        labelStyle={styles.floatingLabelStyle}
+                                        inputStyle={styles.floatingLabelStyle}
+                                        iconStyle={styles.floatingLabelStyle}
+                                        onClick={this.handleGender}
+                                      />
+                                </RadioButtonGroup>
                             </div>
-                            <div className="col-sm-4"></div>
                         </div> 
-                        <div className="row">
-                            <div className="col-sm-4"></div>
-                            <div className="col-sm-4">
+                         <div className="row clearfix">
+                            <div className="col-sm-6">
                                 <button className="btn btn-primary waves-effect" type="submit" style={_inlineStyle}>Result</button>   
                                 <button className="btn btn-primary waves-effect" type="reset" onClick={this.resetFilter}>Reset</button>
                             </div>
-                            <div className="col-sm-4"></div>
                          </div> 
                      </form>    
                    </div>
@@ -410,7 +448,7 @@ export default class StudentListing extends React.Component
             }else{
                 return (
                      <div>
-                        <AddStudentForm Students={myStudents}/>
+                        <AddStudentForm Students={myStudents} close={this.close}/>
                         <Button bsStyle="primary" bsSize="large" id="cancelPanel" onClick={this.close} style={_style}>Cancel</Button> 
                      </div> 
                 );

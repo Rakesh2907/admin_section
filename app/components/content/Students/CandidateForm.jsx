@@ -28,6 +28,7 @@ export default class CandidateForm extends React.Component
      		city: '',
      		email: '',
      		blood_group: 'unknown',
+        gender: "male",
         Students: props.Students
      	}
      	this.handleChangeFname = this.handleChangeFname.bind(this);
@@ -43,6 +44,7 @@ export default class CandidateForm extends React.Component
      	this.handleChangePin = this.handleChangePin.bind(this);
      	this.handleChangeEmail = this.handleChangeEmail.bind(this);
      	this.handleChangeBlood = this.handleChangeBlood.bind(this);
+      this.handleGender = this.handleGender.bind(this);
     }
     handleChangeFname(event){
     	this.setState({first_name:event.target.value})
@@ -83,11 +85,14 @@ export default class CandidateForm extends React.Component
     handleChangeBlood(event,index,value){
     		this.setState({blood_group:value})
     }
+    handleGender(event,value){
+       this.setState({gender:value});
+    }
     handleSubmit(event){
     	event.preventDefault();
       var mystate = this.state.states;
       var mynationality = this.state.nationality;
-      var myblood = this.state.blood_group;
+      var myblood = (this.state.blood_group);
       if(typeof this.props.Students!='undefined'){
           var myUrl =  base_url+'students_con/edit_student';
           var myData = $('#myform1').serialize()+'&states='+mystate+'&nationality='+mynationality+'&blood_group='+myblood+'&child_id='+this.props.Students['child_id']+'&student_id='+this.props.Students['student_id'];
@@ -123,7 +128,8 @@ export default class CandidateForm extends React.Component
     }
     componentDidMount(){
 
-      if(typeof this.props.Students!='undefined'){
+      if(typeof this.props.Students!='undefined')
+      {
           $.ajax({
                     type: 'POST',
                     url: base_url+'students_con/get_candidate_details',
@@ -139,7 +145,7 @@ export default class CandidateForm extends React.Component
                               last_name: resdata[0]['child_lastname'], 
                               adhar_card_number: resdata[0]['child_adhar_card'],
                               mobile: resdata[0]['mobile'],
-                              dob: resdata[0]['child_dob'],
+                              dob: new Date(resdata[0]['child_dob']),
                               address1: resdata[0]['address_line1'],
                               address2: resdata[0]['address_line2'],
                               city: resdata[0]['city'], 
@@ -149,7 +155,9 @@ export default class CandidateForm extends React.Component
                               blood_group: resdata[0]['blood_group'],
                               nationality: resdata[0]['nationality'],
                               gender: resdata[0]['gender'] 
-                          })
+                          }, function(){
+                             
+                            });
                       }else{
                       }
                     }.bind(this),
@@ -193,233 +201,279 @@ export default class CandidateForm extends React.Component
     			    marginTop:16,
     			    marginLeft:10,
               width: 'auto',
-              display: 'flex'
+              display: 'inline-block'
     	    }
     	}
     	const {first_name,last_name,adhar_card_number,mobile,dob,nationality,address1,address2,states,city,pin,email,blood_group,gender} = this.state; 
     	return(
     		<ValidatorForm id="myform1" ref="form" onSubmit={this.handleSubmit.bind(this)} onError={errors => console.log(errors)}>
-    			   <TextValidator
-                      floatingLabelText="First Name"
-                      floatingLabelStyle={styles.floatingLabelStyle}
-                      inputStyle={styles.floatingLabelStyle}
-                      underlineStyle={styles.underlineStyle}
-                      onChange={this.handleChangeFname}
-                      name="first_name"
-                      type="text"
-                      value={first_name}
-                      validators={['required']}
-                      errorMessages={['this field is required']}
-                      id="first_name"
-                      fullWidth={true}
-            	/><br/>
-            	<TextValidator
-                      floatingLabelText="Last Name"
-                      floatingLabelStyle={styles.floatingLabelStyle}
-                      inputStyle={styles.floatingLabelStyle}
-                      underlineStyle={styles.underlineStyle}
-                      onChange={this.handleChangeLname}
-                      name="last_name"
-                      type="text"
-                      value={last_name}
-                      validators={['required']}
-                      errorMessages={['this field is required']}
-                      id="last_name"
-                      fullWidth={true}
-              /><br/>
-              <TextValidator
-	                floatingLabelText="Aadhar Card"
-	                floatingLabelStyle={styles.floatingLabelStyle}
-	                inputStyle={styles.floatingLabelStyle}
-	                underlineStyle={styles.underlineStyle}
-	                onChange={this.handleChangeAcard}
-	                name="adhar_card_number"
-	                type="text"
-	                value={adhar_card_number}
-	                id="adhar_card_number"
-	                validators={['isNumber']}
-	                errorMessages={['enter only number']}
-	                fullWidth={true}
-            /><br />
-              <TextValidator
-                floatingLabelText="Parent Mobile Number"
-                floatingLabelStyle={styles.floatingLabelStyle}
-	            inputStyle={styles.floatingLabelStyle}
-	            underlineStyle={styles.underlineStyle}
-                onChange={this.handleChangeMobile}
-                name="mobile"
-                type="text"
-                value={mobile}
-                id="mobile"
-                validators={['isNumber']}
-                errorMessages={['enter only number']}
-                fullWidth={true}
-            /><br />
-            <DatePicker 
-              	floatingLabelText="Birth Date"
-              	floatingLabelStyle={styles.floatingLabelStyle}
-	            inputStyle={styles.floatingLabelStyle}
-	            underlineStyle={styles.underlineStyle}
-              	onChange={this.handleChangeDob}
-              	openToYearSelection={true} 
-              	fullWidth={true} 
-              	validators={['required']}
-                errorMessages={['this field is required']}
-              	name="dob" 
-              	id="dob" 
-              	value={dob}
-              	defaultDate={dob}
-              	autoOk={true}
-            /><br />
-            <label>Nationality</label>
-       			<RadioButtonGroup name="gender" defaultSelected={gender}>
-         				 <RadioButton
-                    		value="male"
-                    		label="Male"
-                    		style={styles.radioButton}
-                    		labelStyle={styles.floatingLabelStyle}
-                 		 />
-            	   		 <RadioButton
-                    		value="female"
-                    		label="Female"
-                    		style={styles.radioButton}
-                    		labelStyle={styles.floatingLabelStyle}
-                 		/>
-       			</RadioButtonGroup>
-       			<SelectValidator 
-                    name="blood_group" 
-                    floatingLabelText="Blood Group"
+         <div className="row clearfix">
+             <div className="col-sm-6">
+          			   <TextValidator
+                            floatingLabelText="First Name"
+                            floatingLabelStyle={styles.floatingLabelStyle}
+                            inputStyle={styles.floatingLabelStyle}
+                            underlineStyle={styles.underlineStyle}
+                            onChange={this.handleChangeFname}
+                            name="first_name"
+                            type="text"
+                            value={first_name}
+                            validators={['required']}
+                            errorMessages={['this field is required']}
+                            id="first_name"
+                            fullWidth={true}
+                  	/>
+               </div>
+               <div className="col-sm-6">     
+                	<TextValidator
+                          floatingLabelText="Last Name"
+                          floatingLabelStyle={styles.floatingLabelStyle}
+                          inputStyle={styles.floatingLabelStyle}
+                          underlineStyle={styles.underlineStyle}
+                          onChange={this.handleChangeLname}
+                          name="last_name"
+                          type="text"
+                          value={last_name}
+                          validators={['required']}
+                          errorMessages={['this field is required']}
+                          id="last_name"
+                          fullWidth={true}
+                  />
+                </div>
+           </div> 
+           <div className="row clearfix">   
+              <div className="col-sm-6">
+                <TextValidator
+  	                floatingLabelText="Aadhar Card"
+  	                floatingLabelStyle={styles.floatingLabelStyle}
+  	                inputStyle={styles.floatingLabelStyle}
+  	                underlineStyle={styles.underlineStyle}
+  	                onChange={this.handleChangeAcard}
+  	                name="adhar_card_number"
+  	                type="text"
+  	                value={adhar_card_number}
+  	                id="adhar_card_number"
+  	                validators={['isNumber']}
+  	                errorMessages={['enter only number']}
+  	                fullWidth={true}
+                />
+             </div>
+             <div className="col-sm-6"> 
+                <TextValidator
+                    floatingLabelText="Parent Mobile Number"
                     floatingLabelStyle={styles.floatingLabelStyle}
-	                  inputStyle={styles.floatingLabelStyle}
-	                  labelStyle={styles.floatingLabelStyle}
-	                  underlineStyle={styles.underlineStyle}
-                    value={blood_group}
-                    defaultValue={blood_group}
-                    onChange={this.handleChangeBlood}
+  	                inputStyle={styles.floatingLabelStyle}
+  	                underlineStyle={styles.underlineStyle}
+                    onChange={this.handleChangeMobile}
+                    name="mobile"
+                    type="text"
+                    value={mobile}
+                    id="mobile"
+                    validators={['isNumber']}
+                    errorMessages={['enter only number']}
+                    fullWidth={true}
+                />
+             </div>
+            </div> 
+            <div className="row clearfix"> 
+             <div className="col-sm-6">
+                <DatePicker 
+                  	floatingLabelText="Birth Date"
+                  	floatingLabelStyle={styles.floatingLabelStyle}
+    	            inputStyle={styles.floatingLabelStyle}
+    	            underlineStyle={styles.underlineStyle}
+                  	onChange={this.handleChangeDob}
+                  	openToYearSelection={true} 
+                  	fullWidth={true} 
+                  	validators={['required']}
+                    errorMessages={['this field is required']}
+                  	name="dob" 
+                  	id="dob" 
+                  	value={dob}
+                  	defaultDate={dob}
+                  	autoOk={true}
+                />
+              </div>
+            <div className="col-sm-6">      
+                <label>Nationality</label>
+           			<RadioButtonGroup name="gender" valueSelected={gender} onChange={this.handleGender}>
+             				 <RadioButton
+                        		value="male"
+                        		label="Male"
+                        		style={styles.radioButton}
+                        		labelStyle={styles.floatingLabelStyle}
+                     		 />
+                	   		 <RadioButton
+                        		value="female"
+                        		label="Female"
+                        		style={styles.radioButton}
+                        		labelStyle={styles.floatingLabelStyle}
+                     		/>
+           			</RadioButtonGroup>
+              </div>
+            </div>
+            <div className="row clearfix">
+            <div className="col-sm-6">
+           			<SelectValidator 
+                        name="blood_group" 
+                        floatingLabelText="Blood Group"
+                        floatingLabelStyle={styles.floatingLabelStyle}
+    	                  inputStyle={styles.floatingLabelStyle}
+    	                  labelStyle={styles.floatingLabelStyle}
+    	                  underlineStyle={styles.underlineStyle}
+                        value={blood_group}
+                        defaultValue={blood_group}
+                        onChange={this.handleChangeBlood}
+                        validators={['required']}
+                        errorMessages={['this field is required']}
+                        id="blood_group"
+                        fullWidth={true}
+                    >
+                      <MenuItem value="unknown" primaryText="Unknown"/>	
+                      <MenuItem value="A positive" primaryText="A+"/>
+                      <MenuItem value="A negative" primaryText="A-"/>
+                      <MenuItem value="B positive" primaryText="B+"/>
+                      <MenuItem value="B negative" primaryText="B-"/>
+                      <MenuItem value="O positive" primaryText="O+"/>
+                      <MenuItem value="O negative" primaryText="O-"/>
+                      <MenuItem value="AB positive" primaryText="AB+"/>
+                      <MenuItem value="AB negative" primaryText="AB-"/>
+                    </SelectValidator>
+              </div> 
+              <div className="col-sm-6"> 
+           			<SelectValidator 
+                      name="nationality" 
+                      floatingLabelText="Nationality"
+                      floatingLabelStyle={styles.floatingLabelStyle}
+    	                inputStyle={styles.floatingLabelStyle}
+      	              labelStyle={styles.floatingLabelStyle}
+      	              underlineStyle={styles.underlineStyle}
+                      value={nationality}
+                      defaultValue={nationality}
+                      onChange={this.handleChangeNationality}
+                      validators={['required']}
+                      errorMessages={['this field is required']}
+                      id="nationality"
+                      fullWidth={true}
+                    >
+                      <MenuItem value="afghanistan" primaryText="Afghanistan"/>
+                      <MenuItem value="india" primaryText="India"/>
+                    </SelectValidator>
+               </div>
+              </div>
+              <div className="row clearfix"> 
+                  <div className="col-sm-6">     
+      	            <TextValidator
+      		              floatingLabelText="Address Line1"
+      		              floatingLabelStyle={styles.floatingLabelStyle}
+                        inputStyle={styles.floatingLabelStyle}
+                        underlineStyle={styles.underlineStyle}
+      		              onChange={this.handleChangeAddress1}
+      		              name="address1"
+      		              type="text"
+      		              value={address1}
+      		              validators={['required']}
+      		              errorMessages={['this field is required']}
+      		              id="address1"
+      		              fullWidth={true}
+                  	 />
+                  </div>
+                  <div className="col-sm-6">    
+      	            <TextValidator
+      	              floatingLabelText="Address Line2"
+      	              floatingLabelStyle={styles.floatingLabelStyle}
+      		          inputStyle={styles.floatingLabelStyle}
+      		          underlineStyle={styles.underlineStyle}
+      	              onChange={this.handleChangeAddress2}
+      	              name="address2"
+      	              type="text"
+      	              value={address2}
+      	              id="address2"
+      	              fullWidth={true}
+      	            />
+                  </div>
+             </div>
+             <div className="row clearfix">  
+              <div className="col-sm-6">  
+  	            <SelectValidator 
+                    name="states" 
+                    floatingLabelText="States"
+                    floatingLabelStyle={styles.floatingLabelStyle}
+  	                inputStyle={styles.floatingLabelStyle}
+  	                labelStyle={styles.floatingLabelStyle}
+  	                underlineStyle={styles.underlineStyle}
+                    value={states}
+                    defaultValue={states}
+                    onChange={this.handleChangeState}
                     validators={['required']}
                     errorMessages={['this field is required']}
-                    id="blood_group"
+                    id="states"
                     fullWidth={true}
-                >
-                  <MenuItem value="unknown" primaryText="Unknown"/>	
-                  <MenuItem value="A+" primaryText="A+"/>
-                  <MenuItem value="A-" primaryText="A-"/>
-                  <MenuItem value="B+" primaryText="B+"/>
-                  <MenuItem value="B-" primaryText="B-"/>
-                  <MenuItem value="O+" primaryText="O+"/>
-                  <MenuItem value="O-" primaryText="O-"/>
-                  <MenuItem value="AB+" primaryText="AB+"/>
-                  <MenuItem value="AB-" primaryText="AB-"/>
-                </SelectValidator>
-       			<SelectValidator 
-                  name="nationality" 
-                  floatingLabelText="Nationality"
-                  floatingLabelStyle={styles.floatingLabelStyle}
-	                inputStyle={styles.floatingLabelStyle}
-  	              labelStyle={styles.floatingLabelStyle}
-  	              underlineStyle={styles.underlineStyle}
-                  value={nationality}
-                  defaultValue={nationality}
-                  onChange={this.handleChangeNationality}
-                  validators={['required']}
-                  errorMessages={['this field is required']}
-                  id="nationality"
-                  fullWidth={true}
-                >
-                  <MenuItem value="afghanistan" primaryText="Afghanistan"/>
-                  <MenuItem value="india" primaryText="India"/>
-                </SelectValidator>
-	            <TextValidator
-		              floatingLabelText="Address Line1"
-		              floatingLabelStyle={styles.floatingLabelStyle}
-                  inputStyle={styles.floatingLabelStyle}
-                  underlineStyle={styles.underlineStyle}
-		              onChange={this.handleChangeAddress1}
-		              name="address1"
-		              type="text"
-		              value={address1}
-		              validators={['required']}
-		              errorMessages={['this field is required']}
-		              id="address1"
-		              fullWidth={true}
-            	 /><br/>
-	            <TextValidator
-	              floatingLabelText="Address Line2"
-	              floatingLabelStyle={styles.floatingLabelStyle}
-		          inputStyle={styles.floatingLabelStyle}
-		          underlineStyle={styles.underlineStyle}
-	              onChange={this.handleChangeAddress2}
-	              name="address2"
-	              type="text"
-	              value={address2}
-	              id="address2"
-	              fullWidth={true}
-	            /><br/>
-	            <SelectValidator 
-                  name="states" 
-                  floatingLabelText="States"
-                  floatingLabelStyle={styles.floatingLabelStyle}
-	                inputStyle={styles.floatingLabelStyle}
-	                labelStyle={styles.floatingLabelStyle}
-	                underlineStyle={styles.underlineStyle}
-                  value={states}
-                  defaultValue={states}
-                  onChange={this.handleChangeState}
-                  validators={['required']}
-                  errorMessages={['this field is required']}
-                  id="states"
-                  fullWidth={true}
-                >
-                {menuItems1}
-               </SelectValidator> 
-               <TextValidator
-	              floatingLabelText="City"
-	              floatingLabelStyle={styles.floatingLabelStyle}
-		          inputStyle={styles.floatingLabelStyle}
-		          underlineStyle={styles.underlineStyle}
-	              onChange={this.handleChangeCity}
-	              name="city"
-	              type="text"
-	              value={city}
-	              validators={['required']}
-	              errorMessages={['this field is required']}
-	              id="city"
-	              fullWidth={true}
-              /><br/>
-              <TextValidator
-	              floatingLabelText="Pin Code"
-	              floatingLabelStyle={styles.floatingLabelStyle}
-		          inputStyle={styles.floatingLabelStyle}
-		          underlineStyle={styles.underlineStyle}
-	              onChange={this.handleChangePin}
-	              name="pin"
-	              type="text"
-	              value={pin}
-	              validators={['required','isNumber']}
-	              errorMessages={['this field is required', 'enter only number']}
-	              id="pin"
-	              fullWidth={true}
-            /><br/>
-            <TextValidator
-                    floatingLabelText="Email"
-                    floatingLabelStyle={styles.floatingLabelStyle}
-		          	    inputStyle={styles.floatingLabelStyle}
-		          	    underlineStyle={styles.underlineStyle}
-                    onChange={this.handleChangeEmail}
-                    name="email"
-                    type="email"
-                    id="email"
-                    value={email}
-                    validators={['required', 'isEmail']}
-                    errorMessages={['this field is required', 'email is not valid']}
-                    fullWidth={true}
-            />
+                  >
+                  {menuItems1}
+                 </SelectValidator>
+               </div>
+               <div className="col-sm-6">   
+                 <TextValidator
+  	              floatingLabelText="City"
+  	              floatingLabelStyle={styles.floatingLabelStyle}
+  		            inputStyle={styles.floatingLabelStyle}
+  		            underlineStyle={styles.underlineStyle}
+  	              onChange={this.handleChangeCity}
+  	              name="city"
+  	              type="text"
+  	              value={city}
+  	              validators={['required']}
+  	              errorMessages={['this field is required']}
+  	              id="city"
+  	              fullWidth={true}
+                />
+              </div>
+             </div> 
+             <div className="row clearfix"> 
+              <div className="col-sm-6">   
+                <TextValidator
+  	              floatingLabelText="Pin Code"
+  	              floatingLabelStyle={styles.floatingLabelStyle}
+  		          inputStyle={styles.floatingLabelStyle}
+  		          underlineStyle={styles.underlineStyle}
+  	              onChange={this.handleChangePin}
+  	              name="pin"
+  	              type="text"
+  	              value={pin}
+  	              validators={['required','isNumber']}
+  	              errorMessages={['this field is required', 'enter only number']}
+  	              id="pin"
+  	              fullWidth={true}
+               />
+              </div>
+              <div className="col-sm-6"> 
+                  <TextValidator
+                          floatingLabelText="Email"
+                          floatingLabelStyle={styles.floatingLabelStyle}
+      		          	    inputStyle={styles.floatingLabelStyle}
+      		          	    underlineStyle={styles.underlineStyle}
+                          onChange={this.handleChangeEmail}
+                          name="email"
+                          type="email"
+                          id="email"
+                          value={email}
+                          validators={['required', 'isEmail']}
+                          errorMessages={['this field is required', 'email is not valid']}
+                          fullWidth={true}
+                  />
+             </div> 
+            </div> 
+           <div className="row clearfix">
+            <div className="col-sm-6"> 
               <RaisedButton 
                   style={{marginRight: 12}} 
                   primary={true}
                   type="submit"
                   label="Save" 
               />
+            </div>  
+           </div>    
     		</ValidatorForm>
     	);
     }

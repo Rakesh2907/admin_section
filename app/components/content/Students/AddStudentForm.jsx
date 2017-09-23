@@ -67,13 +67,13 @@ export default class AddStudentForm extends React.Component
 	      case 1:
 	        return  <CourseBatch Students={this.props.Students}/>;   
 	      case 2:
-	        return  <StudentFather />;
+	        return  <StudentFather Students={this.props.Students}/>;
 	      case 3:
-	        return  <StudentMother />;
+	        return  <StudentMother Students={this.props.Students}/>;
 	      case 4:
-	        return  <StudentDocuments />;
+	        return  <StudentDocuments Students={this.props.Students}/>;
 	      case 5:
-	        return 	<StudentFees />;           
+	        return 	<StudentFees Students={this.props.Students}/>;           
 	      default:
 	        return 'You\'re a long way from home sonny jim!';
 	    }
@@ -159,6 +159,7 @@ export default class AddStudentForm extends React.Component
     		  <div className="card">
 			        <div className="header">
 			          	<h2>EDIT STUDENT</h2>
+			          	 <a onClick={this.props.close} href="javascript:void(0)" style={{float:'right',position: 'relative',bottom:'22px'}}><i className="material-icons">close</i></a>
 			        </div>  
 			        <div className="body">
 					        <Stepper linear={false} activeStep={stepIndex}>

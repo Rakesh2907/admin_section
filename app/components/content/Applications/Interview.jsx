@@ -28,6 +28,7 @@ class InterviewResult extends React.Component
            });  
       }
       componentWillMount(){
+         per = [];
          var percentage = ['0','10','30','50','70','90'];
          for(var j= 0;j < percentage.length;j++){
              per.push(<option value={percentage[j]}>{percentage[j]}%</option>);
