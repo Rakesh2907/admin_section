@@ -41,7 +41,7 @@ class MainMenu extends React.Component
 						conditionStudents : !this.state.conditionStudents,
 						conditionDashboard : false
 				});
-			}else if(value === 'teacher')
+			}else if(value === 'employee')
 			{
 				this.setState({
 						conditionApplicant : false,
@@ -110,16 +110,11 @@ class MainMenu extends React.Component
 	                        	</Link>
 	                        </ul>
 	                    </li>
-	                    <li className={this.props.currentPath == '/teachers' || this.props.currentPath == '/add_teacher'? "active" :""}>
-	                        <Link to="/teachers" className={this.state.conditionTeachers ? "menu-toggle toggled" :"menu-toggle"} onClick={this.handleClick.bind(this, 'teacher')}>
+	                    <li className={this.props.currentPath == '/employee' ? "active" :""}>
+	                        <Link to="/employee" onClick={this.handleClick.bind(this, 'employee')}>
 	                            <i className="material-icons">people_outline</i>
-	                            <span>TEACHERS</span>
+	                            <span>EMPLOYEE</span>
 	                        </Link>
-	                        <ul className={this.state.conditionTeachers ? "ml-menu myblock" :"ml-menu mynone"}>
-	                        	<Link to="/add_teacher" style={myStyle}>
-	                            	<span>Add Teacher</span>
-	                        	</Link>
-	                        </ul>
 	                    </li>
 	                    <li className={this.props.currentPath == '/parents' ? "active" :""}>
 	                        <Link to="/parents">

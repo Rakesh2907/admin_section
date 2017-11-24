@@ -24,11 +24,13 @@ export default class CourseBatch extends React.Component
         class_name: '',
         section_name: '',
         section_dropdown: false,
-        button_disabled: false
+        button_disabled: false,
+        roll_number: 0
      	}
      	this.handleChangeClasses = this.handleChangeClasses.bind(this);
      	this.handleChangeSections = this.handleChangeSections.bind(this);
       this.handleChangeYear = this.handleChangeYear.bind(this);
+      this.handleRollNumber = this.handleRollNumber.bind(this);
     }
     handleChangeSections(event,index,value){
     	   this.setState({sections:value})
@@ -40,6 +42,9 @@ export default class CourseBatch extends React.Component
     	this.setState({classes:value})
     	this.getSelectedSection(value);
     }
+    handleRollNumber(event){
+        this.setState({roll_number:event.target.value})
+    }
     handleSubmit(event)
     {
       event.preventDefault();
@@ -48,6 +53,7 @@ export default class CourseBatch extends React.Component
       var myclass = this.state.classes;
       var mysection = this.state.sections;
       var myYear = this.state.class_year;
+      var myRollNumber = this.state.roll_number
       if(typeof this.props.Students!='undefined')
       {
           var myUrl = base_url+'students_con/edit_batch';
@@ -64,6 +70,7 @@ export default class CourseBatch extends React.Component
                           'child_id': childId,
                           'class_id': myclass,
                           'section_id' : mysection,
+                          'roll_number': myRollNumber,
                           'year' : myYear
                       },
                       dataType: 'json',
@@ -74,6 +81,7 @@ export default class CourseBatch extends React.Component
                           sessionStorage.setItem('sess_class_year', resdata.year);
                           if(typeof this.props.Students!='undefined'){
                               this.props.Students['section_id'] = resdata.section_id;
+                              this.props.Students['roll_number'] = myRollNumber;
                           }
                           swal({
                               title: "Save Batch Successfully...",
@@ -153,7 +161,8 @@ export default class CourseBatch extends React.Component
                           class_name:resdata[0]['class_name'],
                           section_name:resdata[0]['section_name'],
                           sections:resdata[0]['section_id'],
-                          classes:resdata[0]['class_id']
+                          classes:resdata[0]['class_id'],
+                          roll_number:this.props.Students['roll_number']
                       });
                   }
                 }.bind(this),
@@ -192,7 +201,7 @@ export default class CourseBatch extends React.Component
     			borderColor: black500,
   			}
   		}	
-  		const {classes,sections,class_year,class_name,section_name,section_dropdown,button_disabled} = this.state;
+  		const {classes,sections,class_year,class_name,section_name,section_dropdown,button_disabled,roll_number} = this.state;
 
 
 
@@ -240,7 +249,7 @@ export default class CourseBatch extends React.Component
             <div className="row clearfix">
               <div className="col-sm-6">
                   <TextField
-                            floatingLabelText="Tution Fee"
+                            floatingLabelText="Year"
                             floatingLabelStyle={styles.floatingLabelStyle}
                             inputStyle={styles.floatingLabelStyle}
                             underlineStyle={styles.underlineStyle}
@@ -269,7 +278,25 @@ export default class CourseBatch extends React.Component
                 <div className="col-sm-6">
                     {mysection}
                 </div>
-             </div>   
+             </div>
+             <div className="row clearfix">
+                <div className="col-sm-6">
+                    <TextValidator
+                        floatingLabelText="Roll Number"
+                        floatingLabelStyle={styles.floatingLabelStyle}
+                        inputStyle={styles.floatingLabelStyle}
+                        underlineStyle={styles.underlineStyle}
+                        onChange={this.handleRollNumber}
+                        name="roll_number"
+                        type="text"
+                        value={roll_number}
+                        id="roll_number"
+                        validators={['isNumber']}
+                        errorMessages={['enter only number']}
+                        fullWidth={true}
+                    />
+               </div>
+            </div>   
               <input type="hidden" name="classes" value={classes} /> 
            </div>
           );
@@ -278,7 +305,7 @@ export default class CourseBatch extends React.Component
             <div className="row clearfix">
               <div className="col-sm-4">
                   <TextField
-                            floatingLabelText="Tution Fee"
+                            floatingLabelText="Year"
                             floatingLabelStyle={styles.floatingLabelStyle}
                             inputStyle={styles.floatingLabelStyle}
                             underlineStyle={styles.underlineStyle}

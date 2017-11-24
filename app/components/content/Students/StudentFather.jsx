@@ -196,8 +196,6 @@ export default class StudentFather extends React.Component
                       console.error(err.toString());
                 }.bind(this)
            });
-
-
     }
     render() 
     {

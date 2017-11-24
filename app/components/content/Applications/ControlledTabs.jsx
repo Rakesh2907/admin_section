@@ -1,5 +1,5 @@
 import React from 'react';
-import {Button, Modal, Tabs, Tab, Panel} from 'react-bootstrap';
+import {Button, Modal, Panel} from 'react-bootstrap';
 import ApplicantForm from 'ApplicantForm';
 import ChildForm from 'ChildForm';
 import FatherForm from 'FatherForm';
@@ -9,7 +9,13 @@ import Interview from 'Interview';
 import ApplicantDocument from 'ApplicantDocument';
 import AdmissionFees from 'AdmissionFees';
 import ApplicationFormStatus from 'ApplicationFormStatus';
+
+import {Tabs, Tab} from 'material-ui/Tabs';
+import MenuItem from 'material-ui/MenuItem';
+
 var occuItems = [];
+var statesItems = [];
+var classItems = [];
 var classId = 0;
 var admissionYear = '';
 export default class ControlledTabs extends React.Component
@@ -28,12 +34,20 @@ export default class ControlledTabs extends React.Component
             form_steps: 1,
             child_id: 0,
             convert_to_students: 0,
-            myapplicantData:props.myapplicantData
+            myapplicantData:props.myapplicantData,
+            value: "1",
+            applicantInfo:[],
+            childInfo:[],
+            fatherInfo:[],
+            matherInfo:[],
+            occuInfo:[],
+            statesInfo:[],
+            statusInfo:[],
+            classInfo:[]
           }
           this.handleSelect = this.handleSelect.bind(this);
       }
       componentWillReceiveProps(props){
-          //alert(props.myapplicantData);
           this.setState({myapplicantData:props.myapplicantData});
       }
       componentDidMount()
@@ -42,43 +56,85 @@ export default class ControlledTabs extends React.Component
           this.getStatus(this.state.myapplicantData);
       }
       handleSelect(key) 
-      {
+      { 
+          this.setState({value: key});
           switch(key)
           {
-            case 1:
+            case "1":
               this.getApplicant(this.state.myapplicantData);
             break;
 
-            case 2:
+            case "2":
+              this.getStates();
               this.getChild(this.state.myapplicantData);
             break;
 
-            case 3:
+            case "3":
               this.getOccupations();
               this.getFather(this.state.myapplicantData);
             break;
 
-            case 4:
+            case "4":
               this.getOccupations();
               this.getMother(this.state.myapplicantData);
             break;
 
-            case 5:
-              this.getOccupations();
-              this.getGuardian(this.state.myapplicantData);
-            break;
-
-            case 6:
+            case "6":
+              this.getClasses();
               this.getStatus(this.state.myapplicantData);
             break;
-            case 7:
+
+            case "7":
               this.getInterviewShedule(this.state.myapplicantData,this.state.child_id)
             break;
-            case 9:
+
+            case "9":
               this.getFees(this.state.myapplicantData,this.state.child_id)
             break;
           }
           this.setState({key});
+      }
+      getClasses(){
+        classItems = [];
+        $.ajax({
+                    type: 'POST',
+                    url: base_url+'students_con/get_class',
+                    dataType:'json',
+                     success: function (resdata) {
+                      if(resdata.length > 0)
+                      {
+                          for(var i = 0;i < resdata.length;i++)
+                          {
+                              classItems.push(<MenuItem value={resdata[i]['id']} primaryText={resdata[i]['name']} />)
+                          }
+                          this.setState({classInfo:classItems});
+                      }
+                     }.bind(this),
+                        error: function(xhr, status, err) {
+                          console.error(err.toString());
+                    }.bind(this)
+          });
+      }
+      getStates(){
+          statesItems = [];
+           $.ajax({
+                type: 'POST',
+                url: base_url+'admission_con/get_states',
+                dataType:'json',
+                 success: function (resdata) {
+                  if(resdata.length > 0)
+                  {
+                      for(var i = 0;i < resdata.length;i++)
+                      {
+                          statesItems.push(<MenuItem value={resdata[i]['states']} primaryText={resdata[i]['states']} />)
+                      }
+                      this.setState({statesInfo:statesItems});
+                  }
+                 }.bind(this),
+                    error: function(xhr, status, err) {
+                      console.error(err.toString());
+                }.bind(this)
+           });
       }
       getOccupations(){
           occuItems = [];
@@ -91,8 +147,9 @@ export default class ControlledTabs extends React.Component
                     {
                         for(var i = 0;i < resdata.length;i++)
                         {
-                            occuItems.push(<option value={resdata[i]['occupations']}>{resdata[i]['occupations']}</option>)
+                            occuItems.push(<MenuItem value={resdata[i]['occupations']} primaryText={resdata[i]['occupations']} />)
                         }
+                        this.setState({occuInfo:occuItems});
                     }
                    }.bind(this),
                       error: function(xhr, status, err) {
@@ -169,13 +226,6 @@ export default class ControlledTabs extends React.Component
                {
                    if(resdata.length > 0)
                    {
-                       $("#transaction_id").html(" "+resdata[0]['transaction_id']); 
-                       $("#payment_options").html(" "+resdata[0]['payment_option']);
-                       $("#registration_number").html(" "+resdata[0]['admission_registration_number']);
-                       $("#interview_status").html(" "+resdata[0]['interview_status']);
-                       $("#document_status").html(" "+resdata[0]['document_status']);
-                       $("#applicant_form_status > [value="+resdata[0]['form_status']+"]").attr("selected", "true");
-                       $("#applicantion_for_class > [value="+resdata[0]['class_id']+"]").attr("selected", "true");
                        this.setState({
                             form_steps: resdata[0]['steps'],
                             convert_to_students: resdata[0]['convert_to_student'],
@@ -183,45 +233,13 @@ export default class ControlledTabs extends React.Component
                        });
                        classId = resdata[0]['class_id'];
                        admissionYear = resdata[0]['admission_years']; 
+                       this.setState({statusInfo:resdata[0]});
                    }
                }
              }.bind(this),
                   error: function(xhr, status, err) {
                     console.error(err.toString());
              }.bind(this)      
-          });
-      }
-      getGuardian(applicant_id)
-      {
-          $.ajax({
-            url: base_url+'admin_con/get_guardian',
-            dataType: 'json',
-            type: 'POST',
-            data:{
-                applicant_id: applicant_id
-            },
-            success: function(resdata){
-               if(resdata)
-               {
-                   if(resdata.length > 0)
-                   {
-                        $("input[name='guar_full_name']").val(resdata[0]['guardian_full_name']);
-                        $("input[name='guar_relation']").val(resdata[0]['relation_to_candidate']);
-                        $("input[name='guar_adhar_card']").val(resdata[0]['guardian_adhar_card']);
-                        this.setState({guardian_birth:resdata[0]['guardian_dob']});
-                        var address = resdata[0]['office_address1']+' '+resdata[0]['office_address2']+' '+resdata[0]['state']+' '+resdata[0]['city'];
-                        $("#guar_education > [value="+resdata[0]['guardian_qualification']+"]").attr("selected", "true");
-                        $("#guar_occupation > [value='"+resdata[0]['guardian_occupation']+"']").attr("selected", "true");
-                        $("#mother_address").val(address);
-                        $("input[name='guar_mobile']").val(resdata[0]['guardian_mobile']);
-                        this.setState({mobile_number:resdata[0]['guardian_mobile']});
-                        $("input[name='guar_email']").val(resdata[0]['guardian_email']);
-                   }
-               }
-            }.bind(this),
-                  error: function(xhr, status, err) {
-                    console.error(err.toString());
-              }.bind(this)
           });
       }
       getMother(applicant_id)
@@ -238,18 +256,7 @@ export default class ControlledTabs extends React.Component
                {
                    if(resdata.length > 0)
                    {
-                        $("input[name='mother_full_name']").val(resdata[0]['mother_full_name']);
-                        $("input[name='mother_adhar_card_number']").val(resdata[0]['mother_adhar_card']);
-                        this.setState({mother_birth:resdata[0]['mother_dob']});
-                        $("input[name='mother_desigantion']").val(resdata[0]['mother_designation']);
-                        $("#mother_education > [value="+resdata[0]['mother_qualification']+"]").attr("selected", "true");
-                        $("#mother_occupation > [value='"+resdata[0]['mother_occupation']+"']").attr("selected", "true");
-                        $("#mother_alumni > [value="+resdata[0]['mother_alumni']+"]").attr("selected", "true");
-                        var address = resdata[0]['office_address1']+' '+resdata[0]['office_address2']+' '+resdata[0]['state']+' '+resdata[0]['city'];
-                        $("#mother_address").val(address);
-                        $("input[name='mother_mobile']").val(resdata[0]['mother_mobile']);
-                        this.setState({mobile_number:resdata[0]['mother_mobile']});
-                        $("input[name='mother_email']").val(resdata[0]['mother_email']);
+                        this.setState({matherInfo:resdata[0]});
                    }
                }
             }.bind(this),
@@ -272,19 +279,7 @@ export default class ControlledTabs extends React.Component
                {
                    if(resdata.length > 0)
                    {
-                        $("input[name='father_full_name']").val(resdata[0]['father_full_name']);
-                        $("input[name='father_adhar_card_number']").val(resdata[0]['father_adhar_card']);
-                        this.setState({father_birth:resdata[0]['father_dob']});
-                        $("input[name='father_desigantion']").val(resdata[0]['father_designation']);
-                        $("#father_education > [value="+resdata[0]['father_qualification']+"]").attr("selected", "true");
-                        $("#father_occupation > [value='"+resdata[0]['father_occupation']+"']").attr("selected", "true");
-                        var address = resdata[0]['office_address1']+' '+resdata[0]['office_address2']+' '+resdata[0]['state']+' '+resdata[0]['city'];
-                        $("#father_transferred > [value="+resdata[0]['job_transferable']+"]").attr("selected", "true");
-                        $("#father_alumni > [value="+resdata[0]['father_alumni']+"]").attr("selected", "true");
-                        $("#father_address").val(address);
-                        $("input[name='father_mobile']").val(resdata[0]['father_mobile']);
-                        this.setState({mobile_number:resdata[0]['father_mobile']});
-                        $("input[name='father_email']").val(resdata[0]['father_email']);
+                        this.setState({fatherInfo:resdata[0]});
                    }
                }
             }.bind(this),
@@ -305,20 +300,8 @@ export default class ControlledTabs extends React.Component
               success: function(resdata){
                 if(resdata)
                 {
-                        if(resdata.length > 0)
-                        {
-                            $("input[name='child_first_name']").val(resdata[0]['child_firstname']);
-                            $("input[name='child_last_name']").val(resdata[0]['child_lastname']);
-                            $("input[name='adhar_card_number']").val(resdata[0]['child_adhar_card']);
-                            $("#siblings > [value="+ resdata[0]['siblings']+"]").attr("selected", "true");
-                            $("#child_gender > [value="+resdata[0]['gender']+"]").attr("selected", "true");
-                            this.setState({child_birth:resdata[0]['child_dob']});
-                            var address = resdata[0]['address_line1']+' '+resdata[0]['address_line2']+' '+resdata[0]['city']+' '+resdata[0]['state']+' '+resdata[0]['pin'];
-                            $("#child_address").val(address);
-                            $("input[name='mobile_number']").val(resdata[0]['mobile']);
-                            this.setState({mobile_number:resdata[0]['mobile']});
-                            $("input[name='email']").val(resdata[0]['email']);
-                            $("input[name='previous_school']").val(resdata[0]['previous_school_name']);
+                        if(resdata.length > 0){
+                            this.setState({childInfo:resdata[0]});
                         }
                 }        
               }.bind(this),
@@ -341,11 +324,7 @@ export default class ControlledTabs extends React.Component
                     {
                         if(resdata.length > 0)
                         {
-                            $("input[name='applicant_name']").val(resdata[0]['applicant_name']);
-                            $("input[name='applicant_email']").val(resdata[0]['applicant_email']);
-                            $("input[name='applicant_mobile']").val(resdata[0]['applicant_mobile']);
-                            $("input[name='applicant_adhar_card']").val(resdata[0]['applicant_adhar_card']);
-                            $("input[name='applicant_password']").val(resdata[0]['applicant_password']);
+                            this.setState({applicantInfo:resdata[0]});
                         }  
                     }else{
                       //alert('inn11');
@@ -358,20 +337,53 @@ export default class ControlledTabs extends React.Component
       }
       render()
       {
+          const styles = {
+            headline: {
+              fontSize: 24,
+              paddingTop: 16,
+              marginBottom: 12,
+              fontWeight: 400,
+            },
+          };
+
           return(
-            <div>
-               <Tabs activeKey={this.state.key} onSelect={this.handleSelect} id="controlled-tab-example">
-                  <Tab eventKey={1} title="Applicant"><ApplicantForm myapplicantData={this.state.myapplicantData}/></Tab>
-                  <Tab eventKey={2} title="Child"><ChildForm myapplicantData={this.state.myapplicantData} child_birth={this.state.child_birth} child_mobile={this.state.mobile_number}/></Tab>
-                  <Tab eventKey={3} title="Father"><FatherForm occuItems={occuItems} myapplicantData={this.state.myapplicantData} father_birth={this.state.father_birth} father_mobile={this.state.mobile_number}/></Tab>
-                  <Tab eventKey={4} title="Mother"><MotherForm occuItems={occuItems} myapplicantData={this.state.myapplicantData} mother_birth={this.state.mother_birth} mother_mobile={this.state.mobile_number}/></Tab>
-                  <Tab eventKey={5} title="Guardian"><GuardianForm occuItems={occuItems} myapplicantData={this.state.myapplicantData} guardian_birth={this.state.guardian_birth} guardian_mobile={this.state.mobile_number}/></Tab>
-                  <Tab eventKey={7} title="Interview Shedule/Result" disabled={this.state.disabled}><Interview myapplicantData={this.state.myapplicantData} interviewDate={this.state.interview_date} timeCondition={this.state.time_condition} childId={this.state.child_id}/></Tab>
-                  <Tab eventKey={8} title="Document" disabled={this.state.disabled}><ApplicantDocument myapplicantData={this.state.myapplicantData}/></Tab>
-                  <Tab eventKey={9} title="Fees" disabled={this.state.disabled}><AdmissionFees myapplicantData={this.state.myapplicantData} childId={this.state.child_id}/></Tab>
-                  <Tab eventKey={6} title="Status"><ApplicationFormStatus myapplicantData={this.state.myapplicantData} form_steps={this.state.form_steps} childId={this.state.child_id} convertToStudent={this.state.convert_to_students}/></Tab>
-               </Tabs> 
-            </div>
+            <Tabs value={this.state.value} onChange={this.handleSelect}>
+              <Tab label="Applicant" value="1">
+                <div>
+                  <ApplicantForm myapplicantData={this.state.myapplicantData} applicantDetails={this.state.applicantInfo}/>
+                </div>
+              </Tab>
+              <Tab label="Candidate" value="2">
+                <div>
+                   <ChildForm myapplicantData={this.state.myapplicantData} childInfo={this.state.childInfo} statesInfo={this.state.statesInfo}/>
+                </div>
+              </Tab>
+              <Tab label="Father" value="3">
+                <div>
+                   <FatherForm occuItems={occuItems} myapplicantData={this.state.myapplicantData} fatherInfo={this.state.fatherInfo} occuFatherInfo={this.state.occuInfo} statesInfo={this.state.statesInfo}/>
+                </div>
+              </Tab>
+              <Tab label="Mother" value="4">
+                <div>
+                   <MotherForm occuItems={occuItems} myapplicantData={this.state.myapplicantData} matherInfo={this.state.matherInfo} occuInfo={this.state.occuInfo} statesInfo={this.state.statesInfo}/>
+                </div>
+              </Tab>
+              <Tab label="Interview Shedule/Result" value="7">
+                <div>
+                   <Interview myapplicantData={this.state.myapplicantData} interviewDate={this.state.interview_date} timeCondition={this.state.time_condition} childId={this.state.child_id}/>
+                </div>
+              </Tab>
+              <Tab label="Documents" value="8">
+                <div>
+                   <ApplicantDocument myapplicantData={this.state.myapplicantData}/>
+                </div>
+              </Tab>
+              <Tab label="Status" value="6">
+                <div>
+                   <ApplicationFormStatus myapplicantData={this.state.myapplicantData} statusInfo={this.state.statusInfo} classInfo={this.state.classInfo}/>
+                </div>
+              </Tab>
+      </Tabs>
           );
       }    
 }

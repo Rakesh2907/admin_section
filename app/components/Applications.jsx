@@ -1,22 +1,19 @@
 import React from 'react';
-import Navigation from 'Navigation';
-import LeftSideBar from 'LeftSideBar';
-import SearchBar from 'SearchBar';
 import ApplicationsContent from 'ApplicationsContent';
 import getRouteHandlerBaseUrl  from './helper/js/get-route-handler-base-url';
 
 class Applications extends React.Component 
 {
-	constructor(props) {
+	 constructor(props) {
    			 super(props);
    			 this.state = {
    			 	isAdmin : 0
    			 }
    	}		 
-	componentDidMount()
-	{
-    	document.getElementById('admin_body').className='theme-red';
-    	this._baseUrl = getRouteHandlerBaseUrl(this.props);
+  	componentDidMount()
+  	{
+      	document.getElementById('admin_body').className='theme-red';
+      	this._baseUrl = getRouteHandlerBaseUrl(this.props);
     }
     componentWillMount()
     {
@@ -44,11 +41,6 @@ class Applications extends React.Component
 	   { 
 		   	return (
 			   <div>
-			      <SearchBar />
-				  <Navigation />
-				  <section>
-				  	<LeftSideBar currentPath={this.props.location.pathname}/>	
-				  </section>
 				  <section className="content">
 				    	<ApplicationsContent />
 				  </section>

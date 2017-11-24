@@ -1,18 +1,22 @@
 import React from 'react';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import darkBaseTheme from 'material-ui/styles/baseThemes/darkBaseTheme';
+import SelectField from 'material-ui/SelectField';
 import DatePicker from 'material-ui/DatePicker';
+import RaisedButton from 'material-ui/RaisedButton';
 import {black500, blue500} from 'material-ui/styles/colors';
 import { DataTable } from 'react-data-components';
 import {Button, Modal, Tabs, Tab, Panel} from 'react-bootstrap';
 import ReactTags from 'react-tag-autocomplete';
 import {RadioButton, RadioButtonGroup} from 'material-ui/RadioButton';
+import MenuItem from 'material-ui/MenuItem';
 import AddStudentForm from 'AddStudentForm';
 
 var studentID = 0;
 var childID = 0;
 var classID = 0;
 var myStudents;
+var menuClass = [];
 
 class ActionSubMenu extends React.Component
 {
@@ -65,6 +69,7 @@ class ActionSubMenu extends React.Component
       render(){
           if (this.props.isOpen)
           {
+          
                 var _style = {
                     display:"block"  
                 };
@@ -133,7 +138,6 @@ export default class StudentListing extends React.Component
     			{ title: 'First Name', prop: 'child_firstname' },
     			{ title: 'Last Name', prop: 'child_lastname' },
     			{ title: 'Mobile', prop: 'mobile'},
-    			{ title: 'Fees Status', prop: 'fee_status'},
     			{ title: 'Registration Number', prop: 'registration_number'},
                 { title: 'Year' ,prop: 'year'},
                 { title: 'Actions', prop: 'actions'}
@@ -146,7 +150,10 @@ export default class StudentListing extends React.Component
             tags: [],
             suggestions: [],
             showEditModal: false,
-            gender:'all'
+            gender:'all',
+            fee_status: '',
+            classes: [],
+            student_status: ''
     	}
     	this.filter = this.filter.bind(this);
         this.handleChangeFDate = this.handleChangeFDate.bind(this);
@@ -155,9 +162,12 @@ export default class StudentListing extends React.Component
         this.open = this.open.bind(this);
         this.close = this.close.bind(this);
         this.handleGender = this.handleGender.bind(this);
+        this.handleFeeStatus = this.handleFeeStatus.bind(this);
+        this.handleSelectedClass = this.handleSelectedClass.bind(this);
+        this.handleStudentStatus = this.handleStudentStatus.bind(this);
     } 
-    handleGender(){
-        this.setState({gender:$('input[name=gender]:checked').val()});
+    handleGender(event,value){
+       this.setState({gender:value});
     }
     open(){
         this.setState({ showEditModal: true });
@@ -185,20 +195,41 @@ export default class StudentListing extends React.Component
             const tags = [].concat(this.state.tags, tag)
             this.setState({ tags })
     }
-    componentDidMount()
-    {
-            this.setState({filterVisible:true});
-    		var that = this;
-    		$.get({
-    			url: base_url+'students_con/student_list',
-    			type: 'POST',
-    			dataType: 'json',
-                data:{
-                    from_date : this.state.formatedFDate,
-                    to_date: this.state.formatedTDate,
-                },    
-    			success: function(res){
-
+    handleFeeStatus(event,index,value){
+            this.setState({fee_status:value}) 
+    }
+    handleSelectedClass(event, index, value){
+            this.setState({classes:value});
+    } 
+    handleStudentStatus(event, index, value){
+            this.setState({student_status:value});
+    }
+    getClass(){
+        menuClass = [];
+            $.ajax({
+                    type: 'POST',
+                    url: base_url+'students_con/get_class',
+                    dataType:'json',
+                    success: function (resdata) {
+                      if(resdata.length > 0)
+                      {
+                          for(var i = 0;i < resdata.length;i++){
+                              menuClass.push(<MenuItem value={resdata[i]['id']} primaryText={resdata[i]['name']} />)
+                          }
+                      }
+                     }.bind(this),
+                        error: function(xhr, status, err) {
+                          console.error(err.toString());
+                    }.bind(this)
+          });
+    }
+    studentList(that,myData){
+        $.get({
+                url: base_url+'students_con/student_list',
+                type: 'POST',
+                dataType: 'json',
+                data:myData,    
+                success: function(res){
                     for(var i = 0;i < res.length;i++)
                     {
                         res[i]['actions'] = <ActionMenu studentId={res[i]['student_id']} childId={res[i]['child_id']} classId={res[i]['class_id']} myStudent={res[i]}/> 
@@ -208,7 +239,22 @@ export default class StudentListing extends React.Component
                     });
                 },
                 error: function() { console.log('Failed!'); }
-    		});
+            });
+    }
+    componentDidMount()
+    {
+            this.setState({filterVisible:true});
+    		var that = this;
+            var myData = {
+                    from_date : this.state.formatedFDate,
+                    to_date: this.state.formatedTDate,
+                    gender:'all',
+                    fee_status: '',
+                    selected_class: '',
+                    student_status: ''
+                }
+            this.studentList(that,myData);
+            this.getClass();
     }
     filter(){
     	this.setState({filterVisible: !this.state.filterVisible});
@@ -237,63 +283,51 @@ export default class StudentListing extends React.Component
             formatedFDate:'',
             formatedTDate:'',
             tags:[],
-            gender:'all'
+            gender:'all',
+            fee_status: '',
+            classes:[],
+            student_status:''
         });
-        $.get({
-                url: base_url+'students_con/student_list',
-                type: 'POST',
-                dataType: 'json',
-                data:{
+        var myData = {
                     from_date : '',
                     to_date: '',
                     selected_class: '',
-                    gender:'all'
-                },
-                success: function(res) { 
-                    for(var i = 0;i < res.length;i++)
-                    {
-                        res[i]['actions'] = <ActionMenu studentId={res[i]['student_id']} childId={res[i]['child_id']} classId={res[i]['class_id']} myStudent={res[i]}/> 
-                    }
-                    that.setState({
-                            data: res
-                    });
-                },
-                error: function() { console.log('Failed!'); }
-            });
+                    gender:'all',
+                    fee_status: '',
+                    selected_class: '',
+                    student_status:''
+            }
+        this.studentList(that,myData);
     }
     handleSubmit(event){
         event.preventDefault();
-        let selectedTags = [];
-        for(var t = 0; t < this.state.tags.length; t++){
-            selectedTags.push(this.state.tags[t]['id']);
-        }
-        let selectedNew = Array.from(new Set(selectedTags));
+        let selectedNew = Array.from(new Set(this.state.classes));
         selectedNew = selectedNew.join();
         var that = this;
-        $.get({
-                url: base_url+'students_con/student_list',
-                type: 'POST',
-                dataType: 'json',
-                data:{
+        var myData = {
                     from_date : this.state.formatedFDate,
                     to_date: this.state.formatedTDate,
                     selected_class: selectedNew,
-                    gender: this.state.gender
-                },
-                success: function(res) { 
-                    for(var i = 0;i < res.length;i++)
-                    {
-                        res[i]['actions'] = <ActionMenu studentId={res[i]['student_id']} childId={res[i]['child_id']} classId={res[i]['class_id']} myStudent={res[i]}/> 
-                    }
-                    that.setState({
-                            data: res
-                    });
-                },
-                error: function() { console.log('Failed!'); }
-            });
+                    gender: this.state.gender,
+                    fee_status: this.state.fee_status,
+                    student_status: this.state.student_status
+        }
+        this.studentList(that,myData);
     }	
     formatDate(date){
         return date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate();
+    }
+    
+    menuItems(values) {
+        return names.map((name) => (
+              <MenuItem
+                key={name}
+                insetChildren={true}
+                checked={values && values.indexOf(name) > -1}
+                value={name}
+                primaryText={name}
+              />
+        ));
     }
 	render(){
 			var _style = {
@@ -364,10 +398,25 @@ export default class StudentListing extends React.Component
                         </div>
                          <div className="row clearfix">
                             <div className="col-sm-6">
-                                        <ReactTags tags={this.state.tags} suggestions={this.state.suggestions} handleDelete={this.handleDelete.bind(this)} handleAddition={this.handleAddition.bind(this)} placeholder="Select One or More Classes/standard" minQueryLength={1}/>             
+                                  <SelectField 
+                                    multiple={true}
+                                    name="classes" 
+                                    floatingLabelText="Standred"
+                                    floatingLabelStyle={styles.floatingLabelStyle}
+                                    inputStyle={styles.floatingLabelStyle}
+                                    labelStyle={styles.floatingLabelStyle}
+                                    underlineStyle={styles.underlineStyle}
+                                    value={this.state.classes}
+                                    defaultValue={this.state.classes}
+                                    onChange={this.handleSelectedClass}
+                                    id="classes"
+                                    fullWidth={true}
+                                  >
+                                      {menuClass}
+                                 </SelectField>        
                             </div>
                             <div className="col-sm-6">
-                                <RadioButtonGroup name="gender" labelPosition="right" defaultSelected="all" style={styles.block}>
+                                <RadioButtonGroup name="gender" labelPosition="right" valueSelected={this.state.gender} style={styles.block} onChange={this.handleGender}>
                                       <RadioButton
                                         value="all"
                                         label="ALL"
@@ -375,7 +424,6 @@ export default class StudentListing extends React.Component
                                         labelStyle={styles.floatingLabelStyle}
                                         inputStyle={styles.floatingLabelStyle}
                                         iconStyle={styles.floatingLabelStyle}
-                                        onClick={this.handleGender}
                                       />
                                       <RadioButton
                                         value="male"
@@ -384,7 +432,6 @@ export default class StudentListing extends React.Component
                                         labelStyle={styles.floatingLabelStyle}
                                         inputStyle={styles.floatingLabelStyle}
                                         iconStyle={styles.floatingLabelStyle}
-                                        onClick={this.handleGender}
                                       />
                                       <RadioButton
                                         value="female"
@@ -393,15 +440,53 @@ export default class StudentListing extends React.Component
                                         labelStyle={styles.floatingLabelStyle}
                                         inputStyle={styles.floatingLabelStyle}
                                         iconStyle={styles.floatingLabelStyle}
-                                        onClick={this.handleGender}
                                       />
                                 </RadioButtonGroup>
                             </div>
                         </div> 
                          <div className="row clearfix">
+                             <div className="col-sm-6">
+                                <SelectField 
+                                    name="fee_status" 
+                                    floatingLabelText="Fees Status"
+                                    floatingLabelStyle={styles.floatingLabelStyle}
+                                    inputStyle={styles.floatingLabelStyle}
+                                    labelStyle={styles.floatingLabelStyle}
+                                    underlineStyle={styles.underlineStyle}
+                                    value={this.state.fee_status}
+                                    defaultValue={this.state.fee_status}
+                                    onChange={this.handleFeeStatus}
+                                    id="fee_status"
+                                    fullWidth={true}
+                                >
+                                      <MenuItem value="paid" primaryText="Paid"/>
+                                      <MenuItem value="unpaid" primaryText="Unpaid"/>
+                                 </SelectField>
+                             </div>
+                             <div className="col-sm-6">
+                                <SelectField
+                                  name="student_status" 
+                                  floatingLabelText="Student Status"  
+                                  floatingLabelStyle={styles.floatingLabelStyle}
+                                  inputStyle={styles.floatingLabelStyle}
+                                  labelStyle={styles.floatingLabelStyle}
+                                  underlineStyle={styles.underlineStyle}
+                                  value={this.state.student_status}
+                                  onChange={this.handleStudentStatus}
+                                  id="student_status"
+                                  fullWidth={true}
+                                >
+                                    <MenuItem value="pending" primaryText="Pending"/>
+                                    <MenuItem value="completed" primaryText="Competed"/>
+                                    <MenuItem value="is_deleted" primaryText="Deleted"/>
+                                    <MenuItem value="former" primaryText="Former"/>
+                                </SelectField>
+                             </div>
+                         </div>
+                         <div className="row clearfix">
                             <div className="col-sm-6">
-                                <button className="btn btn-primary waves-effect" type="submit" style={_inlineStyle}>Result</button>   
-                                <button className="btn btn-primary waves-effect" type="reset" onClick={this.resetFilter}>Reset</button>
+                                <RaisedButton label="Result" primary={true} style={_inlineStyle} type="submit"/>
+                                <RaisedButton label="Reset" primary={true} type="reset" onClick={this.resetFilter}/>
                             </div>
                          </div> 
                      </form>    

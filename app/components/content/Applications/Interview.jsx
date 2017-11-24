@@ -1,6 +1,13 @@
 import React from 'react';
 import CalenderTime from '../modules/CalendarTime/App';
 import moment from 'moment';
+import RaisedButton from 'material-ui/RaisedButton';
+import FlatButton from 'material-ui/FlatButton';
+import { ValidatorForm, TextValidator, SelectValidator} from 'react-material-ui-form-validator';
+import {black500, blue500} from 'material-ui/styles/colors';
+import DatePicker from 'material-ui/DatePicker';
+import MenuItem from 'material-ui/MenuItem';
+import TextField from 'material-ui/TextField';
 
 var per = [];
 class InterviewResult extends React.Component
@@ -11,14 +18,34 @@ class InterviewResult extends React.Component
             interviewDate: props.interviewDate,
             isDisabled: false,
             childId: props.childId,
-            myapplicantData: props.myapplicantData
+            myapplicantData: props.myapplicantData,
+            maths_percentage:'0',
+            english_percentage: '0',
+            gk_percentage: '0',
+            result: ''
          };
          this.handleEnable = this.handleEnable.bind(this);
+         this.handleChangeMaths = this.handleChangeMaths.bind(this);
+         this.handleChangeGk = this.handleChangeGk.bind(this);
+         this.handleChangeEnglish = this.handleChangeEnglish.bind(this);
+         this.handleChangeResult = this.handleChangeResult.bind(this);
       }
       handleEnable(){
           this.setState({
                 isDisabled: false
           });
+      }
+      handleChangeMaths(event,index,value){
+          this.setState({maths_percentage:value})
+      }
+      handleChangeEnglish(event,index,value){
+          this.setState({english_percentage:value});
+      }
+      handleChangeGk(event,index,value){
+          this.setState({gk_percentage:value});
+      }
+      handleChangeResult(event,index,value){
+          this.setState({result:value});
       }
       componentWillReceiveProps(props) {
            this.setState({
@@ -31,7 +58,7 @@ class InterviewResult extends React.Component
          per = [];
          var percentage = ['0','10','30','50','70','90'];
          for(var j= 0;j < percentage.length;j++){
-             per.push(<option value={percentage[j]}>{percentage[j]}%</option>);
+             per.push(<MenuItem value={percentage[j]} primaryText={percentage[j]} />);
          } 
       }
       componentDidMount()
@@ -47,19 +74,17 @@ class InterviewResult extends React.Component
               success: function(resdata) {
                 if(resdata.length > 0)
                 {
-                      $("#maths_percentage > [value="+ resdata[0]['maths_percentage']+"]").attr("selected", "true");
-                      $("#english_percentage > [value="+ resdata[0]['english_percentage']+"]").attr("selected", "true");
-                      $("#gk_percentage > [value="+ resdata[0]['gk_percentage']+"]").attr("selected", "true");
-                      $("#result > [value="+ resdata[0]['result']+"]").attr("selected", "true");
+                      this.setState({
+                          maths_percentage: resdata[0]['maths_percentage'],
+                          english_percentage: resdata[0]['english_percentage'],
+                          gk_percentage: resdata[0]['gk_percentage'],
+                          result: resdata[0]['result']
+                      });
                       if(resdata[0]['result'] == 'PASS')
                       {
-                         this.setState({
-                              isDisabled: true
-                         });
+                         this.setState({isDisabled: true});
                       }else{
-                         this.setState({
-                              isDisabled: false
-                         });
+                         this.setState({isDisabled: false});
                       }
                 }else{
                    this.setState({
@@ -75,11 +100,17 @@ class InterviewResult extends React.Component
       handleSubmit(event)
       {
           event.preventDefault();
+
+          var myMaths = this.state.maths_percentage;
+          var myEnglish = this.state.english_percentage;
+          var myGk = this.state.gk_percentage;
+          var myResult = this.state.result;
+
           $.ajax({
               url: base_url+'admin_con/set_inteview_result?id='+this.state.myapplicantData,
               dataType: 'json',
               type: 'POST',
-              data: $('#interview_result').serialize()+"&child_id="+this.state.childId,
+              data: $('#interview_result').serialize()+"&child_id="+this.state.childId+"&maths_percentage="+myMaths+"&english_percentage="+myEnglish+"&gk_percentage="+myGk+"&result="+myResult,
               success: function(resdata) {
                 if(resdata.success){
                    swal({
@@ -89,7 +120,7 @@ class InterviewResult extends React.Component
                       confirmButtonText: 'Okay'
                     });
 
-                    if($("#result").val() == 'PASS'){
+                    if(myResult == 'PASS'){
                         this.setState({
                               isDisabled: true
                         });
@@ -107,56 +138,131 @@ class InterviewResult extends React.Component
       }
       render()
       {
-           var _inlineStyle = {
-              marginRight: 10
-           }
+           const styles = {
+              floatingLabelStyle: {
+                color: black500,
+              },
+              underlineStyle: {
+                borderColor: black500,
+              }
+          }
+          const {maths_percentage,english_percentage,gk_percentage,result} = this.state;
           return(
             <div className="body">
-                <form id="interview_result" onSubmit={this.handleSubmit.bind(this)}>
-                    <div className="form-group form-float">
-                        <label className="form-label">Scheduled Date</label> 
-                        <div className="form-line">
-                            <input type="text" value={moment(this.state.interviewDate).format('llll')} readOnly className="form-control"/>
-                        </div> 
-                    </div>                  
-                    <div className="form-group form-float">
-                                    <div className="form-line">
-                                        <label className="form-label">Maths</label>
-                                        <select id="maths_percentage" className="form-control show-tick" data-live-search="true" name="maths_percentage">
-                                            {per}
-                                        </select>
-                                    </div>
-                    </div>
-                    <div className="form-group form-float">
-                        <div className="form-line">
-                                        <label className="form-label">English</label>
-                                        <select id="english_percentage" className="form-control show-tick" data-live-search="true" name="english_percentage">
-                                            {per}
-                                        </select>
-                        </div>
-                    </div>
-                    <div className="form-group form-float">
-                        <div className="form-line">
-                                        <label className="form-label">GK</label>
-                                        <select id="gk_percentage" className="form-control show-tick" data-live-search="true" name="gk_percentage">
-                                            {per}
-                                        </select>
-                        </div>
-                    </div>
-                    <div className="form-group form-float">
-                        <div className="form-line">
-                              <label className="form-label">Result</label>
-                              <select disabled={this.state.isDisabled} id="result" className="form-control show-tick" data-live-search="true" name="result">
-                                  <option value="NULL">Select</option>
-                                  <option value="PASS">PASS</option>
-                                  <option value="FAIL">FAIL</option>
-                                  <option value="ABSENT">ABSENT</option>
-                              </select>
-                        </div>
-                    </div>
-                    <button type="submit" className="btn btn-primary m-t-15 waves-effect" style={_inlineStyle}>Save</button>
-                    <button type="button" disabled={this.state.isDisabled} className="btn btn-primary m-t-15 waves-effect" onClick={this.props.resheduleHandler}>Reshedule</button>
-                </form>
+                <ValidatorForm id="interview_result" ref="form" onSubmit={this.handleSubmit.bind(this)} onError={errors => console.log(errors)}>
+                  <div className="row clearfix">
+                       <div className="col-sm-6">
+                          <TextField
+                                floatingLabelText="Scheduled Date"
+                                floatingLabelStyle={styles.floatingLabelStyle}
+                                inputStyle={styles.floatingLabelStyle}
+                                labelStyle={styles.floatingLabelStyle}
+                                underlineStyle={styles.underlineStyle}
+                                value={moment(this.state.interviewDate).format('llll')}
+                                fullWidth={true}
+                                disabled={true}
+                          />
+                       </div>
+                  </div>
+                  <div className="row clearfix">
+                       <div className="col-sm-6">
+                           <SelectValidator 
+                              name="maths_percentage" 
+                              floatingLabelText="Maths(%)"
+                              floatingLabelStyle={styles.floatingLabelStyle}
+                              inputStyle={styles.floatingLabelStyle}
+                              labelStyle={styles.floatingLabelStyle}
+                              underlineStyle={styles.underlineStyle}
+                              value={maths_percentage}
+                              defaultValue={maths_percentage}
+                              onChange={this.handleChangeMaths}
+                              id="maths_percentage"
+                              fullWidth={true}
+                            >
+                            {per}
+                        </SelectValidator>
+                       </div>
+                  </div>
+                  <div className="row clearfix">
+                       <div className="col-sm-6">
+                           <SelectValidator 
+                              name="english_percentage" 
+                              floatingLabelText="English(%)"
+                              floatingLabelStyle={styles.floatingLabelStyle}
+                              inputStyle={styles.floatingLabelStyle}
+                              labelStyle={styles.floatingLabelStyle}
+                              underlineStyle={styles.underlineStyle}
+                              value={english_percentage}
+                              defaultValue={english_percentage}
+                              onChange={this.handleChangeEnglish}
+                              id="english_percentage"
+                              fullWidth={true}
+                            >
+                            {per}
+                        </SelectValidator>
+                       </div>
+                  </div> 
+                  <div className="row clearfix">
+                       <div className="col-sm-6">
+                           <SelectValidator 
+                              name="gk_percentage" 
+                              floatingLabelText="General knowledge(%)"
+                              floatingLabelStyle={styles.floatingLabelStyle}
+                              inputStyle={styles.floatingLabelStyle}
+                              labelStyle={styles.floatingLabelStyle}
+                              underlineStyle={styles.underlineStyle}
+                              value={gk_percentage}
+                              defaultValue={gk_percentage}
+                              onChange={this.handleChangeGk}
+                              id="gk_percentage"
+                              fullWidth={true}
+                            >
+                            {per}
+                        </SelectValidator>
+                       </div>
+                  </div>  
+                  <div className="row clearfix">
+                       <div className="col-sm-6">
+                           <SelectValidator 
+                              name="result" 
+                              floatingLabelText="RESULT"
+                              floatingLabelStyle={styles.floatingLabelStyle}
+                              inputStyle={styles.floatingLabelStyle}
+                              labelStyle={styles.floatingLabelStyle}
+                              underlineStyle={styles.underlineStyle}
+                              value={result}
+                              defaultValue={result}
+                              onChange={this.handleChangeResult}
+                              id="result"
+                              fullWidth={true}
+                              disabled={this.state.isDisabled}
+                            >
+                             <MenuItem value="NULL" primaryText="Select" />
+                             <MenuItem value="PASS" primaryText="PASS" /> 
+                             <MenuItem value="FAIL" primaryText="FAIL" /> 
+                             <MenuItem value="ABSENT" primaryText="ABSENT" /> 
+                        </SelectValidator>
+                       </div>
+                  </div>
+                  <div className="row clearfix">
+                       <div className="col-sm-6">
+                          <RaisedButton 
+                              style={{marginRight: 12}} 
+                              primary={true}
+                              type="submit"
+                              label="Save" 
+                           />
+                           <RaisedButton 
+                              style={{marginRight: 12}} 
+                              primary={true}
+                              type="button"
+                              label="Reshedule" 
+                              disabled={this.state.isDisabled}
+                              onClick={this.props.resheduleHandler}
+                           />
+                       </div>
+                  </div>                  
+                </ValidatorForm>
             </div>
           )
       }
@@ -208,7 +314,13 @@ export default class Interview extends React.Component
             );
          }else if(this.state.interviewDate==null && !this.state.timeCondition){
              return(
-                <div><CalenderTime applicantId={this.state.myapplicantData} childId={this.state.childId}/></div>
+                <div className="body">
+                  <div className="row clearfix">
+                     <div className="col-sm-6">
+                        <CalenderTime applicantId={this.state.myapplicantData} childId={this.state.childId}/>
+                     </div>
+                  </div>      
+                </div>
              );
          }else if(this.state.timeCondition){
               return(

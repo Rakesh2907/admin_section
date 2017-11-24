@@ -278,24 +278,24 @@ export default class CandidateForm extends React.Component
             <div className="row clearfix"> 
              <div className="col-sm-6">
                 <DatePicker 
-                  	floatingLabelText="Birth Date"
-                  	floatingLabelStyle={styles.floatingLabelStyle}
-    	            inputStyle={styles.floatingLabelStyle}
-    	            underlineStyle={styles.underlineStyle}
-                  	onChange={this.handleChangeDob}
-                  	openToYearSelection={true} 
-                  	fullWidth={true} 
-                  	validators={['required']}
-                    errorMessages={['this field is required']}
-                  	name="dob" 
-                  	id="dob" 
-                  	value={dob}
-                  	defaultDate={dob}
-                  	autoOk={true}
+                  	 floatingLabelText="Birth Date"
+                  	 floatingLabelStyle={styles.floatingLabelStyle}
+    	               inputStyle={styles.floatingLabelStyle}
+    	               underlineStyle={styles.underlineStyle}
+                  	 onChange={this.handleChangeDob}
+                  	 openToYearSelection={true} 
+                  	 fullWidth={true} 
+                  	 validators={['required']}
+                      errorMessages={['this field is required']}
+                  	 name="dob" 
+                  	 id="dob" 
+                  	 value={dob}
+                  	 defaultDate={dob}
+                  	 autoOk={true}
                 />
               </div>
             <div className="col-sm-6">      
-                <label>Nationality</label>
+                <label>Gender</label>
            			<RadioButtonGroup name="gender" valueSelected={gender} onChange={this.handleGender}>
              				 <RadioButton
                         		value="male"
@@ -435,8 +435,8 @@ export default class CandidateForm extends React.Component
                 <TextValidator
   	              floatingLabelText="Pin Code"
   	              floatingLabelStyle={styles.floatingLabelStyle}
-  		          inputStyle={styles.floatingLabelStyle}
-  		          underlineStyle={styles.underlineStyle}
+  		            inputStyle={styles.floatingLabelStyle}
+  		            underlineStyle={styles.underlineStyle}
   	              onChange={this.handleChangePin}
   	              name="pin"
   	              type="text"

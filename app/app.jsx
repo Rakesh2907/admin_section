@@ -6,7 +6,7 @@ import Dashboard from 'Dashboard';
 import Applications from 'Applications';
 import Login from 'Login';
 import Students from 'Students';
-import Teachers from 'Teachers';
+import Employee from 'Employee';
 import Parents from 'Parents';
 import Classes from 'Classes';
 import Subjects from 'Subjects';
@@ -26,8 +26,10 @@ ReactDOM.render(
 	   <Route path="students" component={Students}/>
 	   <Route path="add_student" component={Students}/>
 	   <Route path="del_student" component={Students}/>
-	   <Route path="teachers" component={Teachers}/>
-	   <Route path="add_teacher" component={Teachers}/>
+	   <Route path="employee" component={Employee}/>
+	   <Route path="add_employee" component={Employee}/>
+	   <Route path="search_employee" component={Employee}/>
+	   <Route path="employee_attendance" component={Employee}/>
 	   <Route path="parents" component={Parents}/>
 	   <Route path="class" component={Classes}/>
 	   <Route path="subjects" component={Subjects}/>
@@ -38,7 +40,6 @@ ReactDOM.render(
 	   <Route path="accounting" component={Accounting}/>
 	   <Route path="transport" component={Transport}/>
 	   <Route path="notice" component={Notice}/>
-	   <Route path="help" component={Teachers}/>
 	   <IndexRoute component={Login}/>
     </Route>
   </Router>,

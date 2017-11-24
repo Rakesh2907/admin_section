@@ -10,6 +10,7 @@ import StudentFather from 'StudentFather';
 import StudentMother from 'StudentMother';
 import StudentDocuments from 'StudentDocuments';
 import StudentFees from 'StudentFees';
+import StudentStatus from 'StudentStatus';
 
 export default class AddStudentForm extends React.Component
 {
@@ -21,13 +22,17 @@ export default class AddStudentForm extends React.Component
     		stepIndex: 0,
     		Students: props.Students
   		}
+  		this.close = this.close.bind(this);
     }
 
+    close = () => {
+    	location.href='#students';
+    }
   	handleNext = () => {
     	const {stepIndex} = this.state;
 	    this.setState({
 	      stepIndex: stepIndex + 1,
-	      finished: stepIndex >= 5,
+	      finished: stepIndex >= 6,
 	    });
     }
 	handlePrev = () => {
@@ -73,7 +78,9 @@ export default class AddStudentForm extends React.Component
 	      case 4:
 	        return  <StudentDocuments Students={this.props.Students}/>;
 	      case 5:
-	        return 	<StudentFees Students={this.props.Students}/>;           
+	        return 	<StudentFees Students={this.props.Students}/>;
+	      case 6: 	
+	      	return	<StudentStatus Students={this.props.Students}/>;           
 	      default:
 	        return 'You\'re a long way from home sonny jim!';
 	    }
@@ -82,8 +89,6 @@ export default class AddStudentForm extends React.Component
   		sessionStorage.clear();
   }
   render() {
-  	//alert('iiiin  '+this.props.Students['student_id']);
-
     const {finished, stepIndex} = this.state;
     const contentStyle = {margin: '0 16px'};
     let mynext = 'next_button_'+stepIndex;
@@ -94,6 +99,7 @@ export default class AddStudentForm extends React.Component
 		      <div className="card">
 			        <div className="header">
 			          	<h2>ADD STUDENT</h2>
+			          	<a onClick={this.close} href="javascript:void(0)" style={{float:'right',position: 'relative',bottom:'22px'}}><i className="material-icons">close</i></a>
 			        </div>  
 			        <div className="body">
 					        <Stepper activeStep={stepIndex}>
@@ -141,7 +147,7 @@ export default class AddStudentForm extends React.Component
 						                  id={myback}
 						                />
 						                <RaisedButton
-						                  label={stepIndex === 5 ? 'Finish' : 'Next'}
+						                  label={stepIndex === 6 ? 'Finish' : 'Next'}
 						                  primary={true}
 						                  onClick={this.handleNext}
 						                  style={{display:"none"}}
@@ -180,6 +186,9 @@ export default class AddStudentForm extends React.Component
 					          </Step>
 					          <Step>
 					          	<StepButton onClick={() => this.setState({stepIndex: 5})}>Fees</StepButton>
+					          </Step>
+					          <Step>
+					          	<StepButton onClick={() => this.setState({stepIndex: 6})}>Current Status</StepButton>
 					          </Step>
 					        </Stepper>
 						        <div style={contentStyle}>

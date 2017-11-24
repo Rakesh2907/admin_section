@@ -32,12 +32,14 @@ export default class StudentFees extends React.Component
       {
     		event.preventDefault();
         var status = this.state.fees_status;
+        var flag = false;
         if(typeof this.props.Students!='undefined')
         { 
             var studentId = this.props.Students['student_id'];
             var childId = this.props.Students['child_id']; 
             var classId = this.props.Students['class_id'];
             var registration_no = this.props.Students['registration_number'];
+            flag = true;
         }else{
             var studentId = sessionStorage.getItem('sess_student_id');
             var childId = sessionStorage.getItem('sess_child_id'); 
@@ -51,14 +53,19 @@ export default class StudentFees extends React.Component
                         data: $('#myform5').serialize()+'&fees_status='+status+'&student_id='+studentId+'&child_id='+childId+'&reg_no='+registration_no+'&class_id='+classId,
                         dataType: 'json',
                         success: function (resdata) {
-                            sessionStorage.clear();
                             swal({
                                 title: "Fees Added to Student...",
                                 type: "success",
                                 confirmButtonClass: 'btn-success',
                                 confirmButtonText: 'Okay'
                             },function(){
-                                  location.reload();
+                                 if(flag)
+                                 {
+                                    document.getElementById("next_button_5").click();
+                                 }else{
+                                    sessionStorage.clear();
+                                    location.reload();
+                                 }   
                             });
                         }.bind(this),
                           error: function(xhr, status, err) {
@@ -237,7 +244,7 @@ export default class StudentFees extends React.Component
                   style={{marginRight: 12}} 
                   primary={true}
                   type="submit"
-                  label="Save & Finish" 
+                  label="Save" 
                />	
     			</ValidatorForm>
     		);

@@ -1,10 +1,10 @@
 import React from 'react';
+import getMuiTheme from 'material-ui/styles/getMuiTheme';
+import darkBaseTheme from 'material-ui/styles/baseThemes/darkBaseTheme';
 import { DataTable } from 'react-data-components';
-import Input from '../fields/Input';
 import {Button, Modal, Tabs, Tab, Panel} from 'react-bootstrap';
-import DatePicker from 'react-bootstrap-date-picker';
-import Radio from '../fields/Radio';
 import ControlledTabs from 'ControlledTabs';
+
 
 var myapplicantData = 0;
 var statusApplicant = false;
@@ -117,7 +117,6 @@ class ActionSubMenu extends React.Component
 
 export default class ApplicationTableListing extends React.Component
 {
-  
   constructor(props) 
   {
             super(props);
@@ -139,6 +138,11 @@ export default class ApplicationTableListing extends React.Component
             this.open = this.open.bind(this);
             this.close = this.close.bind(this);
             this.handleChangeDate = this.handleChangeDate.bind(this);    
+  }
+  getChildContext() {
+        return {
+          muiTheme: getMuiTheme(darkBaseTheme)
+        };
   }
   open(){
     this.setState({ showEditModal: true });
@@ -216,3 +220,7 @@ export default class ApplicationTableListing extends React.Component
          }        
   }
 }	
+
+ApplicationTableListing.childContextTypes = {
+  muiTheme: React.PropTypes.object
+};

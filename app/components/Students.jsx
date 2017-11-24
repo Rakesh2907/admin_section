@@ -1,7 +1,4 @@
 import React from 'react';
-import Navigation from 'Navigation';
-import LeftSideBar from 'LeftSideBar';
-import SearchBar from 'SearchBar';
 import getRouteHandlerBaseUrl  from './helper/js/get-route-handler-base-url';
 import AddStudentForm from './content/Students/AddStudentForm';
 import StudentListing from './content/Students/StudentListing';
@@ -60,11 +57,6 @@ class Students extends React.Component
 	 {	
 		return (
 		   <div>
-		      <SearchBar />
-			  <Navigation />
-			  <section>
-			  	<LeftSideBar currentPath={this.props.location.pathname}/>	
-			  </section>
 			  <section className="content">
 			    	<div className="container-fluid">
 						<div className="block-header">
